@@ -8,16 +8,59 @@ public class CheckersBoard : MonoBehaviour {
     public GameObject whitePiecePrefab; //Reference to the white piece on the board
     public GameObject blackPiecePrefab; //Reference to the black piece on the board
 
-    private Vector3 boardOffset = new Vector3(-6.0f, 0, -6.0f);
-    private Vector3 pieceOffset = new Vector3(-0.5f, 0, -0.4f);
+    private Vector2 cursorPosition; //Vecotr variable to keep track of where the cursor is pointing currently
+
+
+
+    //Offsets for placing the players
+    private Vector3 boardOffset = new Vector3(-4.0f, 0, -4.0f);
+    private Vector3 pieceOffset = new Vector3(0.5f, 0, 0.5f);
     
     private void Start()
     {
         CreateBoard();
     }
 
-        //This function is used to set the board in the beginning of the game
-        private void CreateBoard() {
+    //Update the state of the board
+    private void Update()
+    {
+        UpdateCursor();
+        Debug.Log(cursorPosition);
+    }
+
+    //Function to update the cursor position
+    private void UpdateCursor() {
+        //If it's the player's turn 
+
+        //Do some initial checks 
+
+        //1) is there a main camera present? 
+        if (!Camera.main) {
+            //Set a debug message
+            Debug.Log("Main camera not present");
+            return;
+        }
+
+        
+        RaycastHit touch; //Place to see where the cursor is currently pointing
+        //If the cursor hits the "board"
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touch, 25.0f, LayerMask.GetMask("Board")))
+        {
+            cursorPosition.x = (int)(touch.point.x - boardOffset.x);
+            cursorPosition.y = (int)(touch.point.z - boardOffset.z);  //The board is on the z axis
+        }
+        else {
+            cursorPosition.x =-1;
+            cursorPosition.y = -1;
+        }
+
+
+
+
+    }
+
+    //This function is used to set the board in the beginning of the game
+    private void CreateBoard() {
 
         //Each player has 12 pieces with 4 peice on alternating boxes on three lines
 
@@ -75,7 +118,6 @@ public class CheckersBoard : MonoBehaviour {
 
         }
 
-
     }
 
     //Function to generate a single piece on the board (spawn it and put it into array)
@@ -111,6 +153,6 @@ public class CheckersBoard : MonoBehaviour {
 
     //Function to place the pieces into the right places of the board 
     private void MovePiece(Piece p, int x, int y) {
-        p.transform.position = (Vector3.right * (x*1.85f))+ (Vector3.forward *(1.85f*y)) +boardOffset +pieceOffset;
+        p.transform.position = (Vector3.right *x)+ (Vector3.forward *y) +boardOffset +pieceOffset;
     }
 }
