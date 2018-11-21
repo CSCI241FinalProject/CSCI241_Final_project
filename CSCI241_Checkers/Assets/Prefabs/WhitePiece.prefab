@@ -153,7 +153,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4458088376696196}
-  - component: {fileID: 114182235108759546}
+  - component: {fileID: 114500698988187894}
   m_Layer: 0
   m_Name: WhitePiece
   m_TagString: Untagged
@@ -580,7 +580,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1960006925244366}
   m_Mesh: {fileID: 4300012, guid: 83948a42076c9d4498b608a9512c8d23, type: 3}
---- !u!114 &114182235108759546
+--- !u!114 &114500698988187894
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -591,3 +591,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c0e77c04ffcb7f46bbd637277f417c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWhite: 1
+  isKing: 0

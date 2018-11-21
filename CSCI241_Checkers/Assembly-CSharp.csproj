@@ -61,8 +61,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CheckersBoard.cs" />
-    <Compile Include="Assets\Piece.cs" />
+    <Compile Include="Assets\Script\CheckersBoard.cs" />
+    <Compile Include="Assets\Script\Piece.cs" />
     <None Include="Assets\ArtWork\README.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Github/CSCI241_Final_project/CSCI241_Checkers/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

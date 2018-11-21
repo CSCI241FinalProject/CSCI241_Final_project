@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 33871410982403006}
   - component: {fileID: 23557706000039456}
   - component: {fileID: 95035073958051646}
-  - component: {fileID: 114019458310750630}
+  - component: {fileID: 114484861789876810}
   m_Layer: 0
   m_Name: BlackPiece
   m_TagString: Untagged
@@ -1813,7 +1813,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114019458310750630
+--- !u!114 &114484861789876810
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1824,3 +1824,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c0e77c04ffcb7f46bbd637277f417c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWhite: 0
+  isKing: 0
