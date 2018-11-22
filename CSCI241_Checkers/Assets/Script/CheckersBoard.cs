@@ -115,7 +115,7 @@ public class CheckersBoard : MonoBehaviour {
         if (current != null) {
             selectedPiece = current;
             startDrag = cursorPosition;
-            //Debug.Log(selectedPiece);
+            Debug.Log(selectedPiece);
         }
     }
 

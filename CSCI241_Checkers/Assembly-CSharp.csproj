@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\CameraMovement.cs" />
     <Compile Include="Assets\Script\CheckersBoard.cs" />
     <Compile Include="Assets\Script\Piece.cs" />
     <None Include="Assets\ArtWork\README.txt" />
