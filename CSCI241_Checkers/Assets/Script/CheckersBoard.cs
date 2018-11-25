@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+
 public class CheckersBoard : MonoBehaviour {
 
     //This is the array that stores the board 
@@ -13,8 +15,12 @@ public class CheckersBoard : MonoBehaviour {
     private Vector2 startDrag;
     private Vector2 endDrag;
 
-    private bool playerWhite;
-    private bool isWhiteTurn;
+    private List<Piece> forcedPieces; //List to store forced movement of pieces
+
+
+    public bool playerWhite; //varaible to keep track of player piece color
+    private bool isWhiteTurn; //variable to keep track if it is currently white turn
+    private bool killMove; //variable to keep track if the current move killed a piece
 
     //Offsets for placing the players
     private Vector3 boardOffset = new Vector3(-4.0f, 0, -4.0f);
@@ -23,6 +29,7 @@ public class CheckersBoard : MonoBehaviour {
     private void Start()
     {
         isWhiteTurn = true;
+        forcedPieces = new List<Piece>();   
         CreateBoard();
     }
 
@@ -112,15 +119,33 @@ public class CheckersBoard : MonoBehaviour {
 
         Piece current = boardPieces[x, y];
 
-        if (current != null) {
-            selectedPiece = current;
-            startDrag = cursorPosition;
-            Debug.Log(selectedPiece);
+        if ((current != null) && (current.isWhite == playerWhite))
+        {
+
+            if (forcedPieces.Count == 0)
+            {
+                selectedPiece = current;
+                startDrag = cursorPosition;
+                //Debug.Log(selectedPiece);
+            }
+            else {
+                //Look for the piece in the forcedpieces list
+                if (forcedPieces.Find(currPiece => currPiece == current) == null) {
+                    return;
+                }
+                selectedPiece = current;
+                startDrag = cursorPosition;
+            }
         }
     }
 
     //Function to move the piece from (x1,y1) to (x2,y2)
     private void TryMove(int x1, int y1, int x2, int y2) {
+
+        //First off, check if there is any piece that is being forced to move
+        forcedPieces = ScanForceMovement();
+        
+        
         //For two player support
         startDrag = new Vector2(x1, y1);
         endDrag = new Vector2(x2, y2);
@@ -152,16 +177,29 @@ public class CheckersBoard : MonoBehaviour {
 
 
             //check if the move is actually valid or not
-            if (selectedPiece.CheckMoveValidation(boardPieces, x1, y1, x2, y2)) {
+            if (selectedPiece.CheckMoveValidation(boardPieces, x1, y1, x2, y2))
+            {
 
                 //Check if we killed anything at all (if the move is a jump)
 
-                if (Mathf.Abs(x1 - x2) == 2) {
+                if (Mathf.Abs(x1 - x2) == 2)
+                {
                     Piece dead = boardPieces[((x1 + x2) / 2), ((y1 + y2) / 2)]; //position of dead piece
-                    if (dead != null) {
+                    if (dead != null)
+                    {
                         boardPieces[((x1 + x2) / 2), ((y1 + y2) / 2)] = null;
-                        Destroy(dead);
+                        Destroy(dead.gameObject);
+                        killMove = true; //setting the kill variable to true
                     }
+                }
+
+                //Check if we were actually supposed to kill anything 
+                if ((forcedPieces.Count != 0) && (!killMove)) {
+                    //Had somepieces we needed to kill, but we didn't kill anything
+                    MovePiece(selectedPiece, x1, y1);
+                    startDrag = Vector2.zero;
+                    selectedPiece = null;
+                    return;
                 }
 
                 //Update the array values
@@ -171,6 +209,12 @@ public class CheckersBoard : MonoBehaviour {
 
                 EndCurrentTurn();
 
+            }
+            else {
+                MovePiece(selectedPiece, x1, y1);
+                startDrag = Vector2.zero;
+                selectedPiece = null;
+                return;
             }
 
         }
@@ -184,14 +228,29 @@ public class CheckersBoard : MonoBehaviour {
         startDrag = Vector2.zero;
 
         isWhiteTurn = !isWhiteTurn;
-
+        killMove = false; //resetting the kill move
         checkVictory();
     }
 
     private bool checkVictory() {
         return false;
     }
-    
+
+    private List<Piece> ScanForceMovement() {
+        forcedPieces = new List<Piece>();
+
+        //Check all the pieces one by one if they are forced to move or not
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if ( (boardPieces[i, j] != null) && (boardPieces[i,j].isWhite == isWhiteTurn)){
+                    if (boardPieces[i, j].IsForceMovement(boardPieces, i, j)) {
+                        forcedPieces.Add(boardPieces[i, j]);
+                    }
+                }
+            }
+        }
+        return forcedPieces;
+    } 
     //This function is used to set the board in the beginning of the game
     private void CreateBoard()
     {

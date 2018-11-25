@@ -7,6 +7,84 @@ public class Piece : MonoBehaviour {
     public bool isWhite;
     public bool isKing;
 
+    //Function to check if there is a case where the player is forced to make a killing move
+    public bool IsForceMovement(Piece[,] board, int x, int y) {
+
+        if (isWhite || isKing)
+        {
+            //can only kill in two conditions
+
+            //going top left
+            if (x >= 2 && y <= 5)
+            {
+                Piece toDie = board[x - 1, y + 1];
+                //if there is a piece here and is not the same color, kill it   
+                if ((toDie != null) && (toDie.isWhite != isWhite))
+                {
+                    //Check if the end position is empty or not 
+                    if (board[x - 2, y + 2] == null)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
+            //going top right
+            if (x <= 5 && y <= 5)
+            {
+                Piece toDie = board[x + 1, y + 1];
+                //if there is a piece here and is not the same color, kill it   
+                if ((toDie != null) && (toDie.isWhite != isWhite))
+                {
+                    //Check if the end position is empty or not 
+                    if (board[x + 2, y + 2] == null)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
+
+        }
+        if(!isWhite || isKing) {
+            //going bottom left
+            if ( (x >= 2) && (y >= 2) )
+            {
+                Piece toDie = board[x - 1, y - 1];
+                //if there is a piece here and is not the same color, kill it   
+                if ((toDie != null) && (toDie.isWhite != isWhite))
+                {
+                    //Check if the end position is empty or not 
+                    if (board[x - 2, y - 2] == null)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
+            //going bottom right
+            if ( (x <= 5) && (y >= 2) )
+            {
+                Piece toDie = board[x + 1, y - 1];
+                //if there is a piece here and is not the same color, kill it   
+                if ((toDie != null) && (toDie.isWhite != isWhite))
+                {
+                    //Check if the end position is empty or not 
+                    if (board[x + 2, y - 2] == null)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
+        }
+        return false;
+    }
+
 
     public bool CheckMoveValidation(Piece[,] board, int x1, int y1, int x2, int y2) {
 
