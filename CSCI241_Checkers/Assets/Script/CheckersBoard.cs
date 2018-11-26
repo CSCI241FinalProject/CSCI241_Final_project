@@ -29,6 +29,7 @@ public class CheckersBoard : MonoBehaviour {
     private void Start()
     {
         isWhiteTurn = true;
+        playerWhite = true;
         forcedPieces = new List<Piece>();   
         CreateBoard();
     }
@@ -40,6 +41,8 @@ public class CheckersBoard : MonoBehaviour {
         //Debug.Log(cursorPosition);
 
         //If it is player turn
+
+        if((playerWhite)?isWhiteTurn:!isWhiteTurn)
         {
             //Store the current cursor position
             int x = (int)cursorPosition.x;
@@ -222,18 +225,44 @@ public class CheckersBoard : MonoBehaviour {
 
     }
 
-    //Function to end current turn
-    private void EndCurrentTurn() {
-        selectedPiece = null;
-        startDrag = Vector2.zero;
+   
 
-        isWhiteTurn = !isWhiteTurn;
-        killMove = false; //resetting the kill move
-        checkVictory();
+    private void checkVictory() {
+
+        var allPieces = FindObjectsOfType<Piece>();
+        bool hasWhite = false, hasBlack = false;
+
+        for (int i = 0; i < allPieces.Length; i++) {
+            if (allPieces[i] == true)
+            {
+                hasWhite = true;
+            }
+            else {
+                hasBlack = true;
+            }
+        }
+
+        if (!hasWhite) { Victory(false); }
+        if (!hasBlack) { Victory(true); }
     }
 
-    private bool checkVictory() {
-        return false;
+    private void Victory(bool isWhite) {
+        if (isWhite)
+        {
+            Debug.Log("White won");
+        }
+        else {
+            Debug.Log("Black won");
+        }
+    }
+
+    private List<Piece> ScanForceMovement(Piece current, int x, int y) {
+        forcedPieces = new List<Piece>();
+
+        if (boardPieces[x, y].IsForceMovement(boardPieces,x,y)){
+            forcedPieces.Add(boardPieces[x, y]);
+        }
+        return forcedPieces;
     }
 
     private List<Piece> ScanForceMovement() {
@@ -351,5 +380,43 @@ public class CheckersBoard : MonoBehaviour {
     //Function to place the pieces into the right places of the board 
     private void MovePiece(Piece p, int x, int y) {
         p.transform.position = (Vector3.right *x)+ (Vector3.forward *y) +boardOffset +pieceOffset;
+    }
+
+    //Function to end current turn
+    private void EndCurrentTurn()
+    {
+        int x = (int)endDrag.x;
+        int y = (int)endDrag.y;
+
+
+       //Promote the piece to be king, if it isn't currently and reached end
+        if (selectedPiece != null) {
+
+            if ((selectedPiece.isWhite) && (!selectedPiece.isKing) && (y ==7)) {
+
+                selectedPiece.isKing = true;
+                selectedPiece.transform.Rotate(Vector3.right * 180);
+
+            }
+            else if ((!selectedPiece.isWhite) && (!selectedPiece.isKing) && (y == 0))
+            {
+
+                selectedPiece.isKing = true;
+                selectedPiece.transform.Rotate(Vector3.right * 90); //EDIT THE KING HERE
+                //selectedPiece.changeColor();
+            }
+
+        }
+
+        selectedPiece = null;
+        startDrag = Vector2.zero;
+
+        if ((ScanForceMovement(selectedPiece, x, y).Count != 0) && killMove) {
+            return; 
+        }
+        isWhiteTurn = !isWhiteTurn;
+        playerWhite = !playerWhite;
+        killMove = false; //resetting the kill move
+        checkVictory();
     }
 }

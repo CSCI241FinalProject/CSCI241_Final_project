@@ -593,3 +593,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isWhite: 1
   isKing: 0
+  materials:
+  - {fileID: 0}
+  - {fileID: 0}

@@ -7,6 +7,8 @@ public class Piece : MonoBehaviour {
     public bool isWhite;
     public bool isKing;
 
+ 
+
     //Function to check if there is a case where the player is forced to make a killing move
     public bool IsForceMovement(Piece[,] board, int x, int y) {
 
