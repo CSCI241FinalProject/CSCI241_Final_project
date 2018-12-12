@@ -1826,3 +1826,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isWhite: 0
   isKing: 0
+  materials:
+  - {fileID: 2100000, guid: 62f0c7d17bd67aa479c0b3b4bcc4ea09, type: 2}
+  - {fileID: 2100000, guid: d780bc50e8801a744a5496f2a3e4bfd5, type: 2}

@@ -36,10 +36,10 @@ public class CameraMovement : MonoBehaviour {
                 localRotation.y -= Input.GetAxis("Mouse Y") * mouseSensitivity;
 
                 //don't let y come outside bounds
-                if ((localRotation.y < 45f))
+                if ((localRotation.y < 60f))
                 {
                     //Dont go below horizon
-                    localRotation.y = 45f;
+                    localRotation.y = 60f;
                 }
 
                 if (localRotation.y > 90f)

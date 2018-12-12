@@ -118,21 +118,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: b1097f7800e088643bbed66241177050,
     type: 3}
   m_PrefabInternal: {fileID: 121024770}
---- !u!114 &81555904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 81555903}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 678d82b7deb83844a9c1edfeb17b3791, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  whitePiecePrefab: {fileID: 1994196238727656, guid: 6d43fa1e8e652b648bcb41b1d37f6c8b,
-    type: 2}
-  blackPiecePrefab: {fileID: 1500181051496934, guid: 16c1d3f1f89f1384d8fa5c9755a96cb8,
-    type: 2}
 --- !u!65 &81555908
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -160,6 +145,7 @@ MonoBehaviour:
     type: 2}
   blackPiecePrefab: {fileID: 1500181051496934, guid: 16c1d3f1f89f1384d8fa5c9755a96cb8,
     type: 2}
+  playerWhite: 0
 --- !u!1001 &121024770
 Prefab:
   m_ObjectHideFlags: 0
