@@ -145,6 +145,10 @@ MonoBehaviour:
     type: 2}
   blackPiecePrefab: {fileID: 1500181051496934, guid: 16c1d3f1f89f1384d8fa5c9755a96cb8,
     type: 2}
+  WhiteKingPrefab: {fileID: 1752573323624920, guid: f67f30152c80db740a5443f3fbb2cd50,
+    type: 2}
+  BlackKingPrefab: {fileID: 1580418830326692, guid: c6fb02f3f146eb84e9003348b912c6d5,
+    type: 2}
   playerWhite: 0
 --- !u!1001 &121024770
 Prefab:
@@ -320,7 +324,7 @@ Prefab:
     - target: {fileID: 2300000, guid: 1cf237d4366a90d458f4ec566dc30f97, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: fe9c0136bfb75604e8538b5795f4205c, type: 2}
+      objectReference: {fileID: 2100000, guid: d780bc50e8801a744a5496f2a3e4bfd5, type: 2}
     - target: {fileID: 400000, guid: 1cf237d4366a90d458f4ec566dc30f97, type: 3}
       propertyPath: m_LocalScale.x
       value: 100

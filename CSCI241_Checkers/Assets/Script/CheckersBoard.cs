@@ -10,7 +10,8 @@ public class CheckersBoard : MonoBehaviour
     public Piece[,] boardPieces = new Piece[8, 8];
     public GameObject whitePiecePrefab; //Reference to the white piece on the board
     public GameObject blackPiecePrefab; //Reference to the black piece on the board
-
+    public GameObject WhiteKingPrefab; //Reference to white king on the board 
+    public GameObject BlackKingPrefab; //Reference to black King on the board 
    
     private Vector2 cursorPosition; //Vecotr variable to keep track of where the cursor is pointing currently
     private Piece selectedPiece; //Variable to keep track of current selected piece
@@ -477,17 +478,36 @@ public class CheckersBoard : MonoBehaviour
 
             if ((selectedPiece.isWhite) && (!selectedPiece.isKing) && (y == 7))
             {
+                //If it is white, do placing for white piece
+                GameObject current = Instantiate(WhiteKingPrefab) as GameObject;
+                current.transform.SetParent(transform);
 
-                selectedPiece.isKing = true;
-                selectedPiece.transform.Rotate(Vector3.right * 90); //EDIT KING HERE TODO
-
+                Piece putThis = current.GetComponent<Piece>(); //Getting the components of current
+               
+                boardPieces[x, y] = putThis; //Putting the current piece into the array of board state
+                putThis.x = selectedPiece.x;
+                putThis.y = selectedPiece.y;
+                putThis.isKing = true;
+                putThis.isWhite = true;
+                putThis.transform.position = (Vector3.right * x) + (Vector3.forward * y) + boardOffset + pieceOffset;
+                Destroy(selectedPiece.gameObject);
             }
             else if ((!selectedPiece.isWhite) && (!selectedPiece.isKing) && (y == 0))
             {
+                //If it is black, promote it to be the black king
+                GameObject current = Instantiate(BlackKingPrefab) as GameObject;
+                current.transform.SetParent(transform);
 
-                selectedPiece.isKing = true;
-                selectedPiece.transform.Rotate(Vector3.right * 90); //EDIT THE KING HERE TODO
-                //selectedPiece.changeColor();
+                Piece putThis = current.GetComponent<Piece>(); //Getting the components of current
+
+                boardPieces[x, y] = putThis; //Putting the current piece into the array of board state
+                putThis.x = selectedPiece.x;
+                putThis.y = selectedPiece.y;
+                putThis.isKing = true;
+                putThis.isWhite = false;
+                putThis.transform.position = (Vector3.right * x) + (Vector3.forward * y) + boardOffset + pieceOffset;
+                Destroy(selectedPiece.gameObject);
+
             }
 
         }
