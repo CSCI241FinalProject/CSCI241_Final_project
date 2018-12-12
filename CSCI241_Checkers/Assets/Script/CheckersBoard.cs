@@ -11,6 +11,7 @@ public class CheckersBoard : MonoBehaviour
     public GameObject whitePiecePrefab; //Reference to the white piece on the board
     public GameObject blackPiecePrefab; //Reference to the black piece on the board
 
+   
     private Vector2 cursorPosition; //Vecotr variable to keep track of where the cursor is pointing currently
     private Piece selectedPiece; //Variable to keep track of current selected piece
     private Vector2 startDrag;
@@ -71,6 +72,10 @@ public class CheckersBoard : MonoBehaviour
             }
         }
 
+
+        //TODO 
+        //If its currently not whites turn
+        //Call the AI
 
 
     }
@@ -261,35 +266,48 @@ public class CheckersBoard : MonoBehaviour
 
     private void checkVictory()
     {
+        //Loop through the entire board and put all the pieces into a list
+        List<Piece> all = new List<Piece>();
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (boardPieces[x, y] != null) {
+                    all.Add(boardPieces[x, y]);
+                }
+            }
+        }
 
-        var allPieces = FindObjectsOfType<Piece>();
         bool hasWhite = false, hasBlack = false;
-
-        for (int i = 0; i < allPieces.Length; i++)
+        //check if the list has white or black pieces remaining or not
+        foreach (Piece x in all)
         {
-            if (allPieces[i] == true)
+            if (x.isWhite)
             {
                 hasWhite = true;
             }
-            else
+            else if (!x.isWhite)
             {
                 hasBlack = true;
             }
         }
 
-        if (!hasWhite) { Victory(false); }
-        if (!hasBlack) { Victory(true); }
+
+        if (!hasWhite) { Victory(false); } //If there aren't any white pieces black wins
+        if (!hasBlack) { Victory(true); } //If there aren't any black piecs left, white wins 
     }
 
     private void Victory(bool isWhite)
     {
         if (isWhite)
         {
-            //Debug.Log("White won");
+            //White wins the game 
+            Debug.Log("White won"); //TODO 
+            //CREATE A SCENE MAYBE WITH A WIN MESSAGE? 
         }
         else
         {
-            //Debug.Log("Black won");
+            //Black wins the game
+            Debug.Log("Black won");//TODO
+            //CREATE A SCENE WITH A WIN MESSAGE? 
         }
     }
 
@@ -461,14 +479,14 @@ public class CheckersBoard : MonoBehaviour
             {
 
                 selectedPiece.isKing = true;
-                selectedPiece.transform.Rotate(Vector3.right * 180);
+                selectedPiece.transform.Rotate(Vector3.right * 90); //EDIT KING HERE TODO
 
             }
             else if ((!selectedPiece.isWhite) && (!selectedPiece.isKing) && (y == 0))
             {
 
                 selectedPiece.isKing = true;
-                selectedPiece.transform.Rotate(Vector3.right * 90); //EDIT THE KING HERE
+                selectedPiece.transform.Rotate(Vector3.right * 90); //EDIT THE KING HERE TODO
                 //selectedPiece.changeColor();
             }
 
@@ -488,7 +506,39 @@ public class CheckersBoard : MonoBehaviour
     }
 
 
-    //Write a function that returns a list of all black pieces on the board
-    //Write a function that returns a list of all white pieces on the board
+    //Function that returns all the black pieces on the board as a list
+    public List<Piece> GetBlackPieces()
+    {
+        List<Piece> result = new List<Piece>();
 
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (!boardPieces[x, y].isWhite) {
+                    result.Add(boardPieces[x, y]);
+                }
+            }
+        }
+        return result; 
+    }
+
+
+    //Function that returns all the white pieces on the board as a list
+    public List<Piece> GetWhitePieces()
+    {
+        List<Piece> result = new List<Piece>();
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (boardPieces[x, y].isWhite)
+                {
+                    result.Add(boardPieces[x, y]);
+                }
+            }
+        }
+        return result;
+    }
+
+    
 }
