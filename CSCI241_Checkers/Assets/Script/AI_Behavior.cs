@@ -36,7 +36,6 @@ public class AI_Behavior : CheckersBoard
         return result;
     }
 
-
     //Function that returns all the white pieces on the board as a list
     public List<Piece> GetWhitePieces(Piece[,] board)
     {
@@ -54,8 +53,6 @@ public class AI_Behavior : CheckersBoard
         }
         return result;
     }
-
-
 
 
     //Function that copies the board state passed in and returns new board
@@ -79,6 +76,28 @@ public class AI_Behavior : CheckersBoard
     {
         List<Piece> result = new List<Piece>();
 
+        //If P is king, need to check the 4 adjacent squares
+        if (p.isKing)
+        {
+
+        }
+        else
+        {
+            //If p is not the king, then need to check two adjacent squares based on the color.
+
+            if (p.isWhite)
+            {
+                //if the piece is white, need to go forward, i.e the x and y co-ordinates increase
+            }
+            else
+            {
+                //if the piece is black, need to go backward, i.e. the x and y co-ordinates decrease 
+
+            }
+
+
+
+        }
 
 
         return result;
@@ -96,15 +115,33 @@ public class AI_Behavior : CheckersBoard
         {
 
             //If the move is valid, carry it out in the virtual board
+            //source co-ordiantes
+            int x1 = source.x;
+            int y1 = source.y;
+            //dest coordinates
+            int x2 = dest.x;
+            int y2 = dest.y;
+
+            //Check if the move is a killmove 
+            if (Mathf.Abs(x1 - x2) == 2)
+            {
+                Piece dead = newBoard[((x1 + x2) / 2), ((y1 + y2) / 2)]; //position of dead piece
+                if (dead != null)
+                {
+                    boardPieces[((x1 + x2) / 2), ((y1 + y2) / 2)] = null;
+                }
+            }
+
+            //move the piece
+            newBoard[x2, y2] = source;
+            newBoard[x1, y1] = null;
+
+            //Update the x and y vaules of the source piece
+            source.x = x2;
+            source.y = y2;
         }
-
-
         return newBoard;
     }
-
-    //Write a function to carry out the virtual move 
-    //private Piece[,] VirtualMove ( Piece[,] board, int x1, int x2, int y1, int y2)
-
 
 
     //AI Algorithm. 
