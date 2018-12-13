@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class CheckersBoard : MonoBehaviour
 {
+
+
+    
 
     //This is the array that stores the board 
     public Piece[,] boardPieces = new Piece[8, 8];
@@ -12,7 +16,7 @@ public class CheckersBoard : MonoBehaviour
     public GameObject blackPiecePrefab; //Reference to the black piece on the board
     public GameObject WhiteKingPrefab; //Reference to white king on the board 
     public GameObject BlackKingPrefab; //Reference to black King on the board 
-
+   
     private Vector2 cursorPosition; //Vecotr variable to keep track of where the cursor is pointing currently
     private Piece selectedPiece; //Variable to keep track of current selected piece
     private Vector2 startDrag;
@@ -31,6 +35,7 @@ public class CheckersBoard : MonoBehaviour
 
     private void Start()
     {
+        
         isWhiteTurn = true;
         playerWhite = true;
         forcedPieces = new List<Piece>();
@@ -269,12 +274,9 @@ public class CheckersBoard : MonoBehaviour
     {
         //Loop through the entire board and put all the pieces into a list
         List<Piece> all = new List<Piece>();
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                if (boardPieces[x, y] != null)
-                {
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (boardPieces[x, y] != null) {
                     all.Add(boardPieces[x, y]);
                 }
             }
@@ -305,13 +307,15 @@ public class CheckersBoard : MonoBehaviour
         {
             //White wins the game 
             Debug.Log("White won"); //TODO 
-            //CREATE A SCENE MAYBE WITH A WIN MESSAGE? 
+            //CREATE A SCENE MAYBE WITH A WIN MESSAGE?
+            SceneManager.LoadScene("WhiteWins");
         }
         else
         {
             //Black wins the game
             Debug.Log("Black won");//TODO
-            //CREATE A SCENE WITH A WIN MESSAGE? 
+            //CREATE A SCENE WITH A WIN MESSAGE?
+            SceneManager.LoadScene("BlackWins");
         }
     }
 
@@ -466,6 +470,8 @@ public class CheckersBoard : MonoBehaviour
     private void MovePiece(Piece p, int x, int y)
     {
         p.transform.position = (Vector3.right * x) + (Vector3.forward * y) + boardOffset + pieceOffset;
+
+
     }
 
     //Function to end current turn
@@ -486,7 +492,7 @@ public class CheckersBoard : MonoBehaviour
                 current.transform.SetParent(transform);
 
                 Piece putThis = current.GetComponent<Piece>(); //Getting the components of current
-
+               
                 boardPieces[x, y] = putThis; //Putting the current piece into the array of board state
                 putThis.x = selectedPiece.x;
                 putThis.y = selectedPiece.y;
@@ -529,6 +535,39 @@ public class CheckersBoard : MonoBehaviour
     }
 
 
+    //Function that returns all the black pieces on the board as a list
+    public List<Piece> GetBlackPieces()
+    {
+        List<Piece> result = new List<Piece>();
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (!boardPieces[x, y].isWhite) {
+                    result.Add(boardPieces[x, y]);
+                }
+            }
+        }
+        return result; 
+    }
 
 
+    //Function that returns all the white pieces on the board as a list
+    public List<Piece> GetWhitePieces()
+    {
+        List<Piece> result = new List<Piece>();
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (boardPieces[x, y].isWhite)
+                {
+                    result.Add(boardPieces[x, y]);
+                }
+            }
+        }
+        return result;
+    }
+
+    
 }
