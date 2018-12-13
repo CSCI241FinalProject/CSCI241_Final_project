@@ -11,6 +11,11 @@ public class Piece : MonoBehaviour
     public bool isWhite;
     public bool isKing;
 
+    public Piece() {
+        this.x = 0;
+        this.y = 0; 
+    }
+
 
     public Piece(int xx, int yy)
     {
@@ -101,14 +106,20 @@ public class Piece : MonoBehaviour
 
     public bool CheckMoveValidation(Piece[,] board, int x1, int y1, int x2, int y2)
     {
+        
+        //check index out of bounds
+        if ((x2 < 0) || (x2 > 7) || (y2 < 0) || (y2 > 7))
+        {
+            return false;
+        }
+
 
         //Check if you are moving on top of another piece
         if (board[x2, y2] != null)
         {
             return false;
         }
-
-
+       
         int moveLengthX = Mathf.Abs(x1 - x2);
         int moveLengthY = (y2 - y1);
         //If the piece is white or is king

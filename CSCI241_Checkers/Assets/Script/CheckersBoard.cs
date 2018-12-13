@@ -50,6 +50,19 @@ public class CheckersBoard : MonoBehaviour
 
         //If it is player turn
 
+        AI_Behavior AI = new AI_Behavior(); 
+
+        if (!isWhiteTurn) {
+            int [] result = AI.GetMove(boardPieces);
+            Debug.Log(result[0]);
+            Debug.Log(result[1]);
+            Debug.Log(result[2]);
+            Debug.Log(result[3]);
+            Debug.Log(" ");
+
+        }
+
+
         if ((playerWhite) ? isWhiteTurn : !isWhiteTurn)
         {
             //Store the current cursor position

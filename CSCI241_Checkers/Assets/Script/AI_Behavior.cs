@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class AI_Behavior : CheckersBoard
 {
-
+    //Define recursive depth
+    readonly int DEPTH = 4; 
 
     //Define the offensive points 
     readonly int CAPTUREPIECE = 2;
@@ -14,16 +15,8 @@ public class AI_Behavior : CheckersBoard
     readonly int MAKEKING = 1;
 
     //Define defensive points 
-
-    readonly int ATRISK = 3;
-    readonly int KINGATRISK = 4;
-
-
-
-
-
-
-
+    readonly int ATRISK = -3;
+    readonly int KINGATRISK = -4;
 
 
 
@@ -36,7 +29,7 @@ public class AI_Behavior : CheckersBoard
         {
             for (int y = 0; y < 8; y++)
             {
-                if (!board[x, y].isWhite)
+                if ((board[x,y] != null) &&(!board[x, y].isWhite))
                 {
                     result.Add(board[x, y]);
                 }
@@ -44,9 +37,6 @@ public class AI_Behavior : CheckersBoard
         }
         return result;
     }
-
-
-
 
 
 
@@ -62,7 +52,7 @@ public class AI_Behavior : CheckersBoard
         {
             for (int y = 0; y < 8; y++)
             {
-                if (board[x, y].isWhite)
+                if ((board[x, y] != null) && (board[x, y].isWhite))
                 {
                     result.Add(board[x, y]);
                 }
@@ -70,10 +60,6 @@ public class AI_Behavior : CheckersBoard
         }
         return result;
     }
-
-
-
-
 
 
 
@@ -95,8 +81,6 @@ public class AI_Behavior : CheckersBoard
         }
         return result;
     }
-
-
 
 
 
@@ -271,16 +255,18 @@ public class AI_Behavior : CheckersBoard
 
 
 
-
-
+   
 
 
     //Function to carry out a virtual move in the virtual board 
-    private Piece[,] MakeVirtualMove(Piece source, Piece dest, Piece[,] board)
+    private Move MakeVirtualMove(Piece source, Piece dest, Move thisMove)
     {
+        //TODO make score calculation here.
+        int newScore = 0; 
+
 
         //Make a copy of the board that has been passed in
-        Piece[,] newBoard = CopyBoard(board);
+        Piece[,] newBoard = thisMove.GetBoard();
 
         //Check if the move is valid 
         if (source.CheckMoveValidation(newBoard, source.x, source.y, dest.x, dest.y))
@@ -312,7 +298,11 @@ public class AI_Behavior : CheckersBoard
             source.x = x2;
             source.y = y2;
         }
-        return newBoard;
+
+
+        Move result = new Move(thisMove.GetOrigin(), thisMove.GetDestination(), newBoard);
+        result.score = newScore; 
+        return result;
     }
 
 
@@ -322,23 +312,132 @@ public class AI_Behavior : CheckersBoard
 
 
 
-
-    //AI Algorithm. 
-    /*
-     * Generate a list of all the possible pieces of the given color.
-     * For each piece in the color generate list of all possible moves (check here if there is forced movement, function is in CheckersBoard) 
-     *      choose the best move for this current piece into a list of best moves for each piece. Linked list? With each node having source, destination and finalscore? 
-     *                  Might have to write a new class LinkedList. Not too complicated I think. 
-     * Once you have the best move from the list of best moves in the current board state. Create a virtual move for the BEST move from the list of best moves. Pass in virtual board state
-     * Repeat the algorithm (for the opposite color) until reached max depth or won game. 
-     *      
-     *      Return the best move from the final list of best moves. 
-     */
+    /*****************************************************************************************************************/
+    /*********************************AI PORTION ALERT!**************************************************************/
 
 
-    //Public Piece ChildMoves(Piece iniOrg, Piece curOrg, Piece finDest, Pieces[,] board, int depth){}
 
 
-    //Public Piece MinMax(){}
-    //Makes call to childmoves. Childmoves is the recursive shit. 
+
+
+    List<Move> finalList = new List<Move>(); //global variable to store the end board states of the minimax algorithm
+    //function to get the best move from a list of Moves
+    private Move GetBestMove(List<Move> list)
+    {
+
+        Move result = new Move();
+
+        //loop through the list of final board states and return the move with the max score 
+        foreach (Move move in list)
+        {
+            if (move.score > result.score)
+            {
+                result = move;
+            }
+        }
+        return result;
+    }
+
+
+    private void ChildMove(Move move, bool isWhite, int depth) {
+
+      
+
+        //base case. add all the children moves into the global variable and return  
+        if (depth <= 0) {
+            finalList.Add(move);
+            return;
+        }
+
+
+        //For each board state present in move.children
+        foreach (Move Mover in move.GetChildren())
+        {
+
+            Piece[,] board = Mover.GetBoard(); 
+
+            //Create a list of pieces of current color
+            List<Piece> pieces = new List<Piece>();
+            if (isWhite)
+            {
+                pieces = GetWhitePieces(board);
+            }
+            else
+            {
+                pieces = GetBlackPieces(board);
+            }
+
+
+            List<Move> newList = new List<Move>(); //create new list to set the children of each of this current move
+
+
+            //for each piece of the given color
+            foreach (Piece origin in pieces)
+            { 
+                //Generate a list of all possible moves
+                List<Piece> destinations = GetPossibleMoves(origin, board);
+
+                //Once you have a list of all possible moves. Carry out the virtual move on the board
+                foreach (Piece destination in destinations)
+                {
+                    //Make virtual move here and call the recursive function on the following: 
+                    Move newMove = MakeVirtualMove(origin, destination, Mover);
+                    newList.Add(newMove);
+                }
+            }
+            Mover.SetChildren(newList);
+
+            //call recursive function on each move in newList with depth-1, oppposite color.
+            foreach (Move n in newList) {
+                ChildMove(n, !isWhite, depth--);
+            }
+        }
+
+    }
+
+
+
+
+    public int[] GetMove(Piece[,] board) {
+        int[] result = new int[4];
+
+        List<Piece> blackPieces = GetBlackPieces(board); //get all black pieces on the board
+        List<Move> moves = new List<Move>();//list to store the list of moves
+
+        //For each black piece on the board
+        foreach (Piece piece in blackPieces) {
+
+            //get a list of all possible destinations
+            List<Piece> destinations = GetPossibleMoves(piece, board);
+
+            //for each destination
+            foreach (Piece destination in destinations) {
+
+                //make a new move and carry out a virual move on that board 
+                Move newMove = new Move(piece, destination, board);
+                Move resultantMove = MakeVirtualMove(piece, destination, newMove);
+                moves.Add(resultantMove); //add the virtual move into the board
+            }
+        }
+
+        //now call the recursive function on each of the child moves carried out 
+        foreach (Move thismove in moves) {
+            ChildMove(thismove, true, 3); 
+        }
+
+
+        //do the resetting, and returning here
+
+        Move finalMove = GetBestMove(finalList); //getting the best move among the list of moves
+        finalList = new List<Move>(); //resetting the global variable 
+
+        result[0] = finalMove.GetOrigin().x;
+        result[1] = finalMove.GetOrigin().y;
+        result[2] = finalMove.GetDestination().x;
+        result[3] = finalMove.GetDestination().y; 
+
+        return result; 
+    }
+
+
 }
