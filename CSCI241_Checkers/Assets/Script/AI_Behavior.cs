@@ -18,6 +18,15 @@ public class AI_Behavior : CheckersBoard
     readonly int ATRISK = 3;
     readonly int KINGATRISK = 4;
 
+
+
+
+
+
+
+
+
+
     //Function that returns all the black pieces on the board as a list
     public List<Piece> GetBlackPieces(Piece[,] board)
     {
@@ -35,6 +44,14 @@ public class AI_Behavior : CheckersBoard
         }
         return result;
     }
+
+
+
+
+
+
+
+
 
     //Function that returns all the white pieces on the board as a list
     public List<Piece> GetWhitePieces(Piece[,] board)
@@ -55,6 +72,14 @@ public class AI_Behavior : CheckersBoard
     }
 
 
+
+
+
+
+
+
+
+
     //Function that copies the board state passed in and returns new board
     private Piece[,] CopyBoard(Piece[,] board)
     {
@@ -71,37 +96,184 @@ public class AI_Behavior : CheckersBoard
         return result;
     }
 
+
+
+
+
+
+
+
+
     //Function to get a list of all the possible moves in the passed in board state for the piece 'p'
     private List<Piece> GetPossibleMoves(Piece p, Piece[,] board)
     {
         List<Piece> result = new List<Piece>();
 
-        //If P is king, need to check the 4 adjacent squares
-        if (p.isKing)
+
+        //First of all, check if the piece is being forced to move.
+        if (p.IsForceMovement(board, p.x, p.y))
         {
 
+            if (p.isWhite || p.isKing)
+            {
+                //can only kill in two conditions
+
+                //going top left
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y + 2))
+                {
+                    Piece toDieTL = board[p.x - 1, p.y + 1];
+                    //if there is a piece here and is not the same color, kill it   
+                    if ((toDieTL != null) && (toDieTL.isWhite != p.isWhite))
+                    {
+                        //Check if the end position is empty or not 
+                        if (board[p.x - 2, p.y + 2] == null)
+                        {
+                            //create a ghost piece and add to result
+                            Piece n = new Piece(p.x - 2, p.y + 2);
+                            result.Add(n);
+                        }
+                    }
+                }
+
+                //going top right
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y + 2))
+                {
+                    Piece toDieTR = board[p.x + 1, p.y + 1];
+                    //if there is a piece here and is not the same color, kill it   
+                    if ((toDieTR != null) && (toDieTR.isWhite != p.isWhite))
+                    {
+                        //Check if the end position is empty or not 
+                        if (board[p.x + 2, p.y + 2] == null)
+                        {
+                            //Create a ghost piece and add to result 
+                            Piece n = new Piece(p.x + 2, p.y + 2);
+                            result.Add(n);
+                        }
+                    }
+                }
+
+
+
+
+            }
+
+            if (!p.isWhite || p.isKing)
+            {
+                //going bottom left
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y - 2))
+                {
+                    Piece toDieBL = board[p.x - 1, p.y - 1];
+                    //if there is a piece here and is not the same color, kill it   
+                    if ((toDieBL != null) && (toDieBL.isWhite != p.isWhite))
+                    {
+                        //Check if the end position is empty or not 
+                        if (board[p.x - 2, p.y - 2] == null)
+                        {
+                            //Create a ghost piece and add to result 
+                            Piece n = new Piece(p.x - 2, p.y - 2);
+                            result.Add(n);
+                        }
+                    }
+                }
+
+
+                //going bottom right
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y - 2))
+                {
+                    Piece toDieBR = board[p.x + 1, p.y - 1];
+                    //if there is a piece here and is not the same color, kill it   
+                    if ((toDieBR != null) && (toDieBR.isWhite != p.isWhite))
+                    {
+                        //Check if the end position is empty or not 
+                        if (board[p.x + 2, p.y - 2] == null)
+                        {
+                            //Create a ghost piece and add to result
+                            Piece n = new Piece(p.x + 2, p.y - 2);
+                            result.Add(n);
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
+
+
+        //If its NOT forced movement
+        if (p.isKing)
+        {
+            //Checking bottom left
+            if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y - 1))
+            {
+                Piece n = new Piece(p.x - 1, p.y - 1);
+                result.Add(n);
+            }
+
+            //Checking top left
+            if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y + 1))
+            {
+                Piece n = new Piece(p.x - 1, p.y + 1);
+                result.Add(n);
+            }
+
+            //checking top right
+            if (p.CheckMoveValidation(board, p.x, p.y, p.x + 1, p.y + 1))
+            {
+                Piece n = new Piece(p.x + 1, p.y + 1);
+                result.Add(n);
+            }
+
+            //checking bottom right
+            if (p.CheckMoveValidation(board, p.x, p.y, p.x + 1, p.y - 1))
+            {
+                Piece n = new Piece(p.x + 1, p.y - 1);
+                result.Add(n);
+            }
+        }
+
         else
         {
             //If p is not the king, then need to check two adjacent squares based on the color.
 
             if (p.isWhite)
             {
-                //if the piece is white, need to go forward, i.e the x and y co-ordinates increase
+                //if the piece is white, need to go forward, i.e the y co-ordinates increase
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y + 1))
+                {
+                    Piece n = new Piece(p.x - 1, p.y + 1);
+                    result.Add(n);
+                }
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x + 1, p.y + 1))
+                {
+                    Piece n = new Piece(p.x + 1, p.y + 1);
+                    result.Add(n);
+                }
             }
             else
             {
-                //if the piece is black, need to go backward, i.e. the x and y co-ordinates decrease 
+                //if the piece is black, need to go backward, i.e. the y co-ordinates decrease 
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y - 1))
+                {
+                    Piece n = new Piece(p.x - 1, p.y - 1);
+                    result.Add(n);
+                }
+                if (p.CheckMoveValidation(board, p.y, p.y, p.x + 1, p.y - 1))
+                {
+                    Piece n = new Piece(p.x + 1, p.y - 1);
+                    result.Add(n);
+                }
 
             }
-
-
-
         }
-
-
         return result;
     }
+
+
+
+
+
+
+
 
     //Function to carry out a virtual move in the virtual board 
     private Piece[,] MakeVirtualMove(Piece source, Piece dest, Piece[,] board)
@@ -142,6 +314,13 @@ public class AI_Behavior : CheckersBoard
         }
         return newBoard;
     }
+
+
+
+
+
+
+
 
 
     //AI Algorithm. 
