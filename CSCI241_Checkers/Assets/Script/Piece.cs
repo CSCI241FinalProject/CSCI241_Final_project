@@ -12,6 +12,10 @@ public class Piece : MonoBehaviour
     public bool isKing;
 
 
+    public Piece(int xx, int yy) {
+        x = xx;
+        y = yy;
+    }
 
     //Function to check if there is a case where the player is forced to make a killing move
     public bool IsForceMovement(Piece[,] board, int x, int y)
