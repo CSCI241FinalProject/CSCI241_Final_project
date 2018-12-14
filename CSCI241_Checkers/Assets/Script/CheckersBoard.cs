@@ -50,20 +50,46 @@ public class CheckersBoard : MonoBehaviour
 
         //If it is player turn
 
-        AI_Behavior AI = new AI_Behavior(); 
+        
 
-        if (!isWhiteTurn) {
+        if (!playerWhite) {
+
+            AI_Behavior AI = new AI_Behavior();
+
+
             int [] result = AI.GetMove(boardPieces);
-            Debug.Log(result[0]);
-            Debug.Log(result[1]);
-            Debug.Log(result[2]);
-            Debug.Log(result[3]);
-            Debug.Log(" ");
+
+
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+            Debug.Log("44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444");
+
+
+            int x1 = result[0];
+
+            int y1 = result[1];
+
+            int x2 = result[2];
+
+            int y2 = result[3];
+
+
+            TryMove(x1,y1,x2,y2);
 
         }
 
 
-        if ((playerWhite) ? isWhiteTurn : !isWhiteTurn)
+        if (playerWhite)
         {
             //Store the current cursor position
             int x = (int)cursorPosition.x;
@@ -545,41 +571,6 @@ public class CheckersBoard : MonoBehaviour
         playerWhite = !playerWhite;
         killMove = false; //resetting the kill move
         checkVictory();
-    }
-
-
-    //Function that returns all the black pieces on the board as a list
-    public List<Piece> GetBlackPieces()
-    {
-        List<Piece> result = new List<Piece>();
-
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                if (!boardPieces[x, y].isWhite) {
-                    result.Add(boardPieces[x, y]);
-                }
-            }
-        }
-        return result; 
-    }
-
-
-    //Function that returns all the white pieces on the board as a list
-    public List<Piece> GetWhitePieces()
-    {
-        List<Piece> result = new List<Piece>();
-
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                if (boardPieces[x, y].isWhite)
-                {
-                    result.Add(boardPieces[x, y]);
-                }
-            }
-        }
-        return result;
     }
 
     

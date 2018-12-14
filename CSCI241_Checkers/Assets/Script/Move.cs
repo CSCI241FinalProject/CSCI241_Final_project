@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour
+public class Move : ScriptableObject
 {
 
 
-    private Piece org;
-    private Piece dest;
-    private Piece[,] board;
+    private FPiece org;
+    private FPiece dest;
+    private FPiece[,] board;
     public int score;
     private List<Move> children;
 
 
     //Constructor function 
     public Move() {
-        this.org = new Piece();
-        this.dest = new Piece();
-        this.board = new Piece[8, 8];
+        this.org = new FPiece();
+        this.dest = new FPiece();
+        this.board = new FPiece[8, 8];
         this.score = 0;
         this.children = new List<Move>(); 
 
@@ -25,7 +25,7 @@ public class Move : MonoBehaviour
 
 
     //Constructor function.
-    public Move(Piece Origin, Piece Destination, Piece[,] NewBoard) {
+    public Move(FPiece Origin, FPiece Destination, FPiece[,] NewBoard) {
         this.org = Origin;
         this.dest = Destination;
         this.board = NewBoard;
@@ -34,7 +34,7 @@ public class Move : MonoBehaviour
     }
 
     //Constructor function.
-    public Move(Piece Origin, Piece Destination, Piece [,] NewBoard, List<Move> Child)
+    public Move(FPiece Origin, FPiece Destination, FPiece [,] NewBoard, List<Move> Child)
     {
         this.org = Origin;
         this.dest = Destination;
@@ -46,23 +46,23 @@ public class Move : MonoBehaviour
 
 
     //Get the original position function
-    public Piece GetOrigin() {
+    public FPiece GetOrigin() {
         return org; 
     }
 
 
     //Get the original destination
-    public Piece GetDestination() {
+    public FPiece GetDestination() {
         return dest; 
     }
 
     //function to set the new board
-    public void SetBoard(Piece[,] newBoard) {
+    public void SetBoard(FPiece[,] newBoard) {
         this.board = newBoard; 
     }
 
     //function to get the board in current Move
-    public Piece[,] GetBoard() {
+    public FPiece[,] GetBoard() {
         return this.board; 
     }
 

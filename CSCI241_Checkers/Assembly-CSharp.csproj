@@ -65,6 +65,7 @@
     <Compile Include="Assets\MainMenu.cs" />
     <Compile Include="Assets\Script\AI_Behavior.cs" />
     <Compile Include="Assets\Script\CheckersBoard.cs" />
+    <Compile Include="Assets\Script\FPiece.cs" />
     <Compile Include="Assets\Script\Move.cs" />
     <Compile Include="Assets\Script\Piece.cs" />
     <Compile Include="Assets\Sound.cs" />
