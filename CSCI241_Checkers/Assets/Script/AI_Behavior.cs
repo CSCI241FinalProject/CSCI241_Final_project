@@ -264,95 +264,26 @@ public class AI_Behavior : CheckersBoard
 
         List<FPiece> result = new List<FPiece>();
 
+        //If its a forced movenent
+        if (p.IsForceMovement(board, p.x, p.y)) {
 
-        //First of all, check if the piece is being forced to move.
-        if (p.IsForceMovement(board, p.x, p.y))
-        {
 
-            if (p.isWhite || p.isKing)
-            {
-                //can only kill in two conditions
+            //If its king. 
 
-                //going top left
-                if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y + 2))
-                {
-                    FPiece toDieTL = board[p.x - 1, p.y + 1];
-                    //if there is a piece here and is not the same color, kill it   
-                    if ((toDieTL != null) && (toDieTL.isWhite != p.isWhite))
-                    {
-                        //Check if the end position is empty or not 
-                        if (board[p.x - 2, p.y + 2] == null)
-                        {
-                            //create a ghost piece and add to result
-                            FPiece n = new FPiece(p.x - 2, p.y + 2);
-                            result.Add(n);
-                        }
-                    }
-                }
 
-                //going top right
-                if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y + 2))
-                {
-                    FPiece toDieTR = board[p.x + 1, p.y + 1];
-                    //if there is a piece here and is not the same color, kill it   
-                    if ((toDieTR != null) && (toDieTR.isWhite != p.isWhite))
-                    {
-                        //Check if the end position is empty or not 
-                        if (board[p.x + 2, p.y + 2] == null)
-                        {
-                            //Create a ghost piece and add to result 
-                            FPiece n = new FPiece(p.x + 2, p.y + 2);
-                            result.Add(n);
-                        }
-                    }
-                }
+            //If its white 
+
+
+            //if its black
 
 
 
 
-            }
 
-            if (!p.isWhite || p.isKing)
-            {
-                //going bottom left
-                if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y - 2))
-                {
-                    FPiece toDieBL = board[p.x - 1, p.y - 1];
-                    //if there is a piece here and is not the same color, kill it   
-                    if ((toDieBL != null) && (toDieBL.isWhite != p.isWhite))
-                    {
-                        //Check if the end position is empty or not 
-                        if (board[p.x - 2, p.y - 2] == null)
-                        {
-                            //Create a ghost piece and add to result 
-                            FPiece n = new FPiece(p.x - 2, p.y - 2);
-                            result.Add(n);
-                        }
-                    }
-                }
-
-
-                //going bottom right
-                if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y - 2))
-                {
-                    FPiece toDieBR = board[p.x + 1, p.y - 1];
-                    //if there is a piece here and is not the same color, kill it   
-                    if ((toDieBR != null) && (toDieBR.isWhite != p.isWhite))
-                    {
-                        //Check if the end position is empty or not 
-                        if (board[p.x + 2, p.y - 2] == null)
-                        {
-                            //Create a ghost piece and add to result
-                            FPiece n = new FPiece(p.x + 2, p.y - 2);
-                            result.Add(n);
-                        }
-                    }
-                }
-            }
-
-
-            return result;
         }
+
+
+
 
 
         //If its NOT forced movement
