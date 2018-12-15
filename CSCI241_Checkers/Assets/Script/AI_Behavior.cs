@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AI_Behavior : CheckersBoard
 {
@@ -170,7 +168,6 @@ public class AI_Behavior : CheckersBoard
         //Return the resultant list
         return result;
     }
-
 
 
 
@@ -699,14 +696,6 @@ public class AI_Behavior : CheckersBoard
 
         }
 
-
-
-
-
-
-
-        //print(newScore);
-
         //Finally, create a new Move with the score for this movement, the new board and the original Starting moves
         Move result = new Move(thisMove.GetOrigin(), thisMove.GetDestination(), newBoard);
         result.AddScore(newScore);
@@ -725,39 +714,35 @@ public class AI_Behavior : CheckersBoard
     private Move GetBestMove(List<Move> list)
     {
 
-        /*
-        print("All Possible moves are");
-        foreach (Move n in list)
-        {
-            int[] resul = new int[4];
-
-            resul[0] = n.GetOrigin().x;
-            resul[1] = n.GetOrigin().y;
-            resul[2] = n.GetDestination().x;
-            resul[3] = n.GetDestination().y;
-
-
-
-            Debug.Log(resul[0]);
-            Debug.Log(resul[1]);
-            Debug.Log("TO: ");
-            Debug.Log(resul[2]);
-            Debug.Log(resul[3]);
-            Debug.Log(" ");
-            Debug.Log("Move Score:");
-            Debug.Log(n.GetScore());
-            Debug.Log("----");
-
-
-        }
-        */
-
-
-
 
         Move result = new Move();
         result.AddScore(-999999);
 
+        bool sameScore = true; //Variable to check to see if all moves have same score
+        int length = list.Count;
+
+        if (length == 1)
+        {
+            return list[0];
+        }
+
+        if (length != 1 && length != 0)
+        {
+            for (int i = 0; i < length - 1; i++)
+            {
+                if (list[i].GetScore() != list[i + 1].GetScore())
+                {
+                    sameScore = false;
+                }
+            }
+
+            if (sameScore)
+            {
+                //if all nodes have same score, return a random node among the list 
+                int rand = Random.Range(0, length);
+                return list[rand];
+            }
+        }
 
         //loop through the list of final board states and return the move with the max score 
         foreach (Move move in list)
@@ -767,14 +752,14 @@ public class AI_Behavior : CheckersBoard
                 result = move;
             }
         }
+
         return result;
     }
 
 
 
 
-
-
+    //Main recursive function of the bunch
     private void ChildMove(Move move, bool isWhite, int depth)
     {
 
@@ -787,8 +772,6 @@ public class AI_Behavior : CheckersBoard
             //print(move.GetScore());
             return;
         }
-
-
 
 
         FPiece[,] board = move.GetBoard();
@@ -870,7 +853,18 @@ public class AI_Behavior : CheckersBoard
         //call recursive function on each move in newList with depth-1, oppposite color.
         foreach (Move n in newList)
         {
-            ChildMove(n, !isWhite, depth - 1);
+            //Check to see if the resultant board have colors of the board or not
+            if (GetBlackPieces(n.GetBoard()).Count == 0)
+            {
+                ChildMove(n, !isWhite, 0);
+
+            }
+            else if (GetWhitePieces(n.GetBoard()).Count == 0)
+            {
+                ChildMove(n, !isWhite, 0);
+            }
+            else
+            { ChildMove(n, !isWhite, depth - 1); }
         }
 
     }
@@ -910,28 +904,79 @@ public class AI_Behavior : CheckersBoard
         }
         else
         {
-            //check if it was forced and now only one white is left on board, then game won
-            List<FPiece> whitePieces = GetWhitePieces(board);
-            if (whitePieces.Count == 1)
+            //BASE CASE 1 : check if it was forced and now only one white is left on board, then game won
             {
+                List<FPiece> whitePieces = GetWhitePieces(board);
+                if (whitePieces.Count == 1)
+                {
 
-                List<FPiece> done = GetPossibleMoves(blackPieces[0], board);
+                    List<FPiece> done = GetPossibleMoves(blackPieces[0], board);
 
 
-                result[0] = blackPieces[0].x;
-                result[1] = blackPieces[0].y;
-                result[2] = done[0].x;
-                result[3] = done[0].y;
+                    result[0] = blackPieces[0].x;
+                    result[1] = blackPieces[0].y;
+                    result[2] = done[0].x;
+                    result[3] = done[0].y;
 
-                return result;
+                    return result;
 
+                }
             }
-
 
         }
 
 
+        //BASE CASE 2 : Check to see if there is any possible moves for the white left
+        {
+            List<FPiece> wDest = new List<FPiece>();
+            List<FPiece> whiteP = GetWhitePieces(board);
+            foreach (FPiece piece in whiteP)
+            {
+                List<FPiece> destinations = GetPossibleMoves(piece, board);
+                wDest.AddRange(destinations);
+            }
+            if (wDest.Count == 0)
+            {
+                //There aren't any possile moves left for white, so black won
+                //BASE CASE 2 CONT: No possible moves. White won
+                Debug.Log("White Won!");
+                SceneManager.LoadScene("BlackWins");
+            }
+        }
 
+
+
+        //BASE CASE 3: Check to see if there is only one destination
+        {
+            FPiece Moveable = new FPiece();
+            List<FPiece> totDest = new List<FPiece>();
+            foreach (FPiece piece in blackPieces)
+            {
+                //Get all possible moves for black pieces
+                List<FPiece> destinations = GetPossibleMoves(piece, board);
+                if (destinations.Count != 0)
+                {
+                    Moveable = piece; //Store the piece that can move for future use
+                }
+                totDest.AddRange(destinations);
+            }
+            if (totDest.Count == 1)
+            {
+                //Find the piece that can move
+                //Return that piece
+                result[0] = Moveable.x;
+                result[1] = Moveable.y;
+                result[2] = totDest[0].x;
+                result[3] = totDest[0].y;
+                return result;
+            }
+            else if (totDest.Count == 0)
+            {
+                //BASE CASE 3 CONT: No possible moves. White won
+                Debug.Log("White Won!");
+                SceneManager.LoadScene("WhiteWins");
+            }
+        }
 
 
         List<Move> moves = new List<Move>();//list to store the list of moves
@@ -939,17 +984,18 @@ public class AI_Behavior : CheckersBoard
         //For each black piece on the board
         foreach (FPiece piece in blackPieces)
         {
+            /*
             print("--");
             print("Possible black: ");
             print(piece.x);
             print(piece.y);
-            print("--");
+            print("--");*/
             List<FPiece> destinations = GetPossibleMoves(piece, board);
+            
 
             //for each destination
             foreach (FPiece destination in destinations)
             {
-
                 FPiece[,] newBoard = CopyBoard(board);
                 //make a new move and carry out a virual move on that board 
 
@@ -965,29 +1011,33 @@ public class AI_Behavior : CheckersBoard
         }
 
         //now call the recursive function on each of the child moves carried out 
-        foreach (Move thismove in moves)
+        foreach (Move n in moves)
         {
-            ChildMove(thismove, true, 1);
-            //print(thismove.GetScore());
+            //Check to see if the resultant board have colors of the board or not
+            if (GetBlackPieces(n.GetBoard()).Count == 0)
+            {
+                ChildMove(n, false, 0);
 
+            }
+            else if (GetWhitePieces(n.GetBoard()).Count == 0)
+            {
+                ChildMove(n, false, 0);
+            }
+            else
+            { ChildMove(n, true, 1); }
         }
 
-
         //do the resetting, and returning here
-
         Move finalMove = GetBestMove(finalList); //getting the best move among the list of moves
         finalList = null; //resetting the global variable 
-
-
-
-
-
 
         result[0] = finalMove.GetOrigin().x;
         result[1] = finalMove.GetOrigin().y;
         result[2] = finalMove.GetDestination().x;
         result[3] = finalMove.GetDestination().y;
 
+
+        /*
 
         Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         Debug.Log("BestMove: ");
@@ -998,7 +1048,7 @@ public class AI_Behavior : CheckersBoard
         Debug.Log(result[2]);
         Debug.Log(result[3]);
         Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
+        */
 
 
 
