@@ -6,26 +6,122 @@ using UnityEngine;
 
 public class AI_Behavior : CheckersBoard
 {
-    //Define recursive depth
-    readonly int DEPTH = 4;
-
     //Define the offensive points 
     readonly int CAPTUREPIECE = 2;
-    readonly int CAPTUREKING = 1;
+    readonly int CAPTUREKING = 4;
     readonly int CAPTUREDOUBLE = 5;
-    readonly int CAPTUREMULTI = 10;
-    readonly int MAKEKING = 1;
+    readonly int MAKEKING = 4;
 
     //Define defensive points 
-    readonly int ATRISK = -3;
+    readonly int ATRISK = -2;
     readonly int KINGATRISK = -4;
+
+
+
+
+
+
+    //Function that copies the original board and creates a copy in Fpiece
+    public FPiece[,] CopyMainBoard(Piece[,] board)
+    {   
+        //New board to store the result in
+        FPiece[,] result = new FPiece[8, 8];
+
+
+        //Initialize the new board
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                result[i, j] = null;
+            }
+        }
+
+
+        //Copy everything from the old board onto new board
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (board[x, y] != null)
+                {
+
+                    FPiece current = new FPiece
+                    {
+                        x = board[x, y].x,
+                        y = board[x, y].y,
+                        isKing = board[x, y].isKing,
+                        isWhite = board[x, y].isWhite
+                    };
+                    result[x, y] = current;
+
+                }
+            }
+        }
+
+        return result;
+    }
+
+
+
+
+
+    //Function that creates a copy of FPiece[,]
+    public FPiece[,] CopyBoard(FPiece[,] board)
+    //This function was necessary along with the first one to make virtual moves possible
+    {
+        //New board to copy onto
+        FPiece[,] result = new FPiece[8, 8];
+
+
+        //Initialize new board
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                result[i, j] = null;
+            }
+        }
+
+
+        //Copy everything from the old board onto new board
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (board[x, y] != null)
+                {
+
+                    FPiece current = new FPiece
+                    {
+                        x = board[x, y].x,
+                        y = board[x, y].y,
+                        isKing = board[x, y].isKing,
+                        isWhite = board[x, y].isWhite
+                    };
+                    result[x, y] = current;
+
+                }
+            }
+        }
+
+
+        return result;
+    }
+
+
+
+
 
 
     //Function that returns all the black pieces on the board as a list
     public List<FPiece> GetBlackPieces(FPiece[,] board)
     {
+        //Resultant list to add the black pieces of the board onto
         List<FPiece> result = new List<FPiece>();
 
+
+        //Loop through the board and find all the black pieces
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
@@ -37,103 +133,23 @@ public class AI_Behavior : CheckersBoard
             }
         }
 
-
+        //Return the list
         return result;
     }
 
-
-
-
-
-
-
-    //Function that copies the original board and creates a copy in Fpiece
-    public FPiece[,] CopyMainBoard(Piece[,] board)
-    {
-
-        FPiece[,] result = new FPiece[8, 8];
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                result[i, j] = null;
-            }
-        }
-
-
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                if (board[x, y] != null)
-                {
-
-                    FPiece current = new FPiece
-                    {
-                        x = board[x, y].x,
-                        y = board[x, y].y,
-                        isKing = board[x, y].isKing,
-                        isWhite = board[x, y].isWhite
-                    };
-                    result[x, y] = current;
-
-                }
-            }
-        }
-
-        return result;
-    }
-
-
-
-
-    //Function that creates a copy of FPiece[,]
-    public FPiece[,] CopyBoard(FPiece[,] board)
-    {
-
-        FPiece[,] result = new FPiece[8, 8];
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                result[i, j] = null;
-            }
-        }
-
-
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                if (board[x, y] != null)
-                {
-
-                    FPiece current = new FPiece
-                    {
-                        x = board[x, y].x,
-                        y = board[x, y].y,
-                        isKing = board[x, y].isKing,
-                        isWhite = board[x, y].isWhite
-                    };
-                    result[x, y] = current;
-
-                }
-            }
-        }
-
-
-        return result;
-    }
-
-
-
-
-
+    
+    
+    
+    
+   
     //Function that returns all the white pieces on the board as a list
     public List<FPiece> GetWhitePieces(FPiece[,] board)
     {
+        //List onto which all the white pieces of the board is stored
         List<FPiece> result = new List<FPiece>();
 
+
+        //Loop through the board and find all the white pieces
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
@@ -145,6 +161,8 @@ public class AI_Behavior : CheckersBoard
             }
         }
 
+
+        //Return the resultant list
         return result;
     }
 
@@ -158,96 +176,103 @@ public class AI_Behavior : CheckersBoard
     private List<FPiece> GetPossibleMoves(FPiece p, FPiece[,] board)
     {
 
-
+        //Resultant list of faux pieces onto which the destinations will be saved
         List<FPiece> result = new List<FPiece>();
 
-        //If its a forced movenent
+
+        //Check if the movement of the passed-in piece has been restricted
         if (p.IsForceMovement(board, p.x, p.y))
         {
 
-            //If its king. 
+            //If the piece is a king. 
             if (p.isKing)
             {
 
-                //Check the four corners
+                //Check the four corners around it
 
+                //Bottom right
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y - 2))
                 {
                     FPiece n = new FPiece(p.x + 2, p.y - 2);
                     result.Add(n);
                 }
 
-                //check if move is valid here 
+                //Bottom left 
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y - 2))
                 {
                     FPiece n = new FPiece(p.x - 2, p.y - 2);
                     result.Add(n);
                 }
 
+                //Top right
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y + 2))
                 {
                     FPiece n = new FPiece(p.x + 2, p.y + 2);
                     result.Add(n);
                 }
 
-                //check if move is valid here 
+                //Top left 
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y + 2))
                 {
                     FPiece n = new FPiece(p.x - 2, p.y + 2);
                     result.Add(n);
                 }
+
+                //Checked all possible places for king, return list
                 return result;
             }
 
-            //If its white 
+            //Else if its not a king but is white 
             if (p.isWhite)
             {
-                //Check the top two corners
+                //Check top right corner
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y + 2))
                 {
                     FPiece n = new FPiece(p.x + 2, p.y + 2);
                     result.Add(n);
                 }
 
-                //check if move is valid here 
+                //Check top left corner
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y + 2))
                 {
                     FPiece n = new FPiece(p.x - 2, p.y + 2);
                     result.Add(n);
                 }
 
+                //All possible locations checked. Return result.
                 return result;
             }
 
 
-            //if its black
+            //Finally, if it's black
             if (!p.isWhite)
             {
-                //Check bottom two corners
+                //Check bottom right corner
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x + 2, p.y - 2))
                 {
                     FPiece n = new FPiece(p.x + 2, p.y - 2);
                     result.Add(n);
                 }
 
-                //check if move is valid here 
+                //Check bottom left corner
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 2, p.y - 2))
                 {
                     FPiece n = new FPiece(p.x - 2, p.y - 2);
                     result.Add(n);
                 }
 
+                //All possible positions checked, return result.
                 return result;
             }
 
         }
 
 
-
+        //Else, if the movement isn't forced. Check for three cases : King, white, black
         else
         {
 
-            //If its NOT forced movement
+            //If its NOT forced movement and is king
             if (p.isKing)
             {
                 //Checking bottom left
@@ -282,25 +307,34 @@ public class AI_Behavior : CheckersBoard
             }
 
 
-            //If p is not the king, then need to check two adjacent squares based on the color.
+            //If p is not the king, then need to check for white and black
+
+            //If its white
             if (p.isWhite)
             {
-                //if the piece is white, need to go forward, i.e the y co-ordinates increase
+                //Check top left
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y + 1))
                 {
                     FPiece n = new FPiece(p.x - 1, p.y + 1);
                     result.Add(n);
                 }
+
+                //Check top right
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x + 1, p.y + 1))
                 {
                     FPiece n = new FPiece(p.x + 1, p.y + 1);
                     result.Add(n);
                 }
+
+                //All places checked, return result
                 return result;
             }
-            else
+            
+            if(!p.isWhite)
             {
-                //if the piece is black, need to go backward, i.e. the y co-ordinates decrease 
+                //if the piece is black
+                
+                //Check bottom left
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y - 1))
                 {
                     if (board[p.x - 1, p.y - 1] == null)
@@ -310,7 +344,8 @@ public class AI_Behavior : CheckersBoard
                     }
                 }
 
-                if (p.CheckMoveValidation(board, p.y, p.y, p.x + 1, p.y - 1))
+                //Check bottom right
+                if (p.CheckMoveValidation(board, p.x, p.y, p.x + 1, p.y - 1))
                 {
                     if (board[p.x + 1, p.y - 1] == null)
                     {
@@ -318,27 +353,45 @@ public class AI_Behavior : CheckersBoard
                         result.Add(n);
                     }
                 }
+
+                //All possible places checked, return result
                 return result;
             }
         }
+
+        //If it reaches here, there aren't any possible moves. Return empty list
         return result;
     }
-
     
+
+
+
+
+    //Function to make a virtual move on a virtual board 
     private Move MakeVirtualMove(FPiece source, FPiece dest, Move thisMove)
     {
-        //TODO make score calculation here.
+        //Variable to store the score colleceted by the virtual move made
         int newScore = 0;
 
+        //Store the king status of the passes in piece
+        bool wasKing;
+        if (source.isKing)
+        {
+            wasKing = true;
+        }
+        else {
+            wasKing = false;
+        }
 
         //Make a copy of the board that has been passed in
         FPiece[,] newBoard = CopyBoard(thisMove.GetBoard());
 
         //Check if the move is valid 
         if (source.CheckMoveValidation(newBoard, source.x, source.y, dest.x, dest.y))
+        //If the move is valid, carry it out in the virtual board
         {
 
-            //If the move is valid, carry it out in the virtual board
+
             //source co-ordiantes
             int x1 = source.x;
             int y1 = source.y;
@@ -354,30 +407,37 @@ public class AI_Behavior : CheckersBoard
                 if (dead != null)
                 {
                     newBoard[((x1 + x2) / 2), ((y1 + y2) / 2)] = null;
+
+                    //Check if the king was killed and implement score correspondingly
                     if (dead.isKing)
                     {
                         newScore = newScore + CAPTUREKING;
 
                     }
                     else
+                    //If the king wasn't killed, a regular piece was
                     {
                         newScore = newScore + CAPTUREPIECE;
 
                     }
                 }
                 else
+                //If the function reaches here, there was some error. Send out debug message and return
                 {
+                    Debug.Log("Error in Make virtual move > Kill move.");
                     return thisMove;
                 }
             }
 
+
+            //Create a new faux piece that is a duplicate of the source piece to move
             FPiece newSource = new FPiece(source.x, source.y, source.isWhite, source.isKing);
 
-            //move the piece
+            //Move the piece onto the new board
             newBoard[x2, y2] = newSource;
             newBoard[x1, y1] = null;
 
-            //Update the x and y vaules of the source piece
+            //Update the x and y vaules of the new piece
             newSource.x = x2;
             newSource.y = y2;
 
@@ -393,20 +453,30 @@ public class AI_Behavior : CheckersBoard
                 newSource.isKing = true;
             }
 
+            //If the newSource wasn't king before, but is now, append score 
+            if (!wasKing && newSource.isKing) {
+                newScore = newScore + MAKEKING;
+            }
+
+
+
+            //Now do the rest of Score checking for the current board status starting here: TODO
+
+
+
+
+
+
+
         }
 
-
+        //Finally, create a new Move with the score for this movement, the new board and the original Starting moves
         Move result = new Move(thisMove.GetOrigin(), thisMove.GetDestination(), newBoard);
         result.score = newScore;
+
+        //Return the move
         return thisMove;
     }
-
-
-
-
-
-    /*****************************************************************************************************************/
-    /*********************************AI PORTION ALERT!**************************************************************/
 
 
 
@@ -418,7 +488,7 @@ public class AI_Behavior : CheckersBoard
     private Move GetBestMove(List<Move> list)
     {
 
-
+        /*
         print("All Possible moves are");
         foreach (Move n in list)
         {
@@ -439,7 +509,7 @@ public class AI_Behavior : CheckersBoard
             Debug.Log(" ");
 
         }
-
+        */
 
 
 
@@ -458,8 +528,6 @@ public class AI_Behavior : CheckersBoard
         }
         return result;
     }
-
-
 
 
 
@@ -580,6 +648,8 @@ public class AI_Behavior : CheckersBoard
 
 
 
+
+    //Main function of the algorithm
     public int[] GetMove(Piece[,] mainBoard)
     {
 
@@ -609,14 +679,14 @@ public class AI_Behavior : CheckersBoard
             blackPieces = tempBlacks;
         }
 
-        
+        /*
         print("Possible Blacks:");
         foreach (FPiece x in blackPieces) {
             print(x.x);
             print(x.y);
             print(" ");
         }
-        
+        */
 
 
 
@@ -626,16 +696,34 @@ public class AI_Behavior : CheckersBoard
         foreach (FPiece piece in blackPieces)
         {
 
+            print("*********************************************");
+
+            print("Source: ");
+            print(piece.x);
+            print(piece.y);
+            print("TO THESE");
+            print("Destinations");
 
             //get a list of all possible destinations
             List<FPiece> destinations = GetPossibleMoves(piece, board);
 
-          
+
+            foreach (FPiece mo in destinations)
+            {
+                print(mo.x);
+                print(mo.y);
+                print("--");
+            }
+            print("**********************************************");
 
 
             //for each destination1
             foreach (FPiece destination in destinations)
             {
+
+           
+
+
 
                 FPiece[,] newBoard = CopyBoard(board);
                 //make a new move and carry out a virual move on that board 
@@ -653,7 +741,7 @@ public class AI_Behavior : CheckersBoard
         //now call the recursive function on each of the child moves carried out 
         foreach (Move thismove in moves)
         {
-            ChildMove(thismove, true, 2);
+            ChildMove(thismove, true, 1);
 
         }
 
