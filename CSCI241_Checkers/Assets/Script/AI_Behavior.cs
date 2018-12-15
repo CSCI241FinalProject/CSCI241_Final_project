@@ -324,13 +324,7 @@ public class AI_Behavior : CheckersBoard
         return result;
     }
 
-
-
-
-
-
-
-    //Function to carry out a virtual move in the virtual board 
+    
     private Move MakeVirtualMove(FPiece source, FPiece dest, Move thisMove)
     {
         //TODO make score calculation here.
@@ -360,8 +354,19 @@ public class AI_Behavior : CheckersBoard
                 if (dead != null)
                 {
                     newBoard[((x1 + x2) / 2), ((y1 + y2) / 2)] = null;
+                    if (dead.isKing)
+                    {
+                        newScore = newScore + CAPTUREKING;
+
+                    }
+                    else
+                    {
+                        newScore = newScore + CAPTUREPIECE;
+
+                    }
                 }
-                else {
+                else
+                {
                     return thisMove;
                 }
             }
@@ -395,8 +400,6 @@ public class AI_Behavior : CheckersBoard
         result.score = newScore;
         return thisMove;
     }
-
-
 
 
 
@@ -650,7 +653,7 @@ public class AI_Behavior : CheckersBoard
         //now call the recursive function on each of the child moves carried out 
         foreach (Move thismove in moves)
         {
-            ChildMove(thismove, true, 1);
+            ChildMove(thismove, true, 2);
 
         }
 
