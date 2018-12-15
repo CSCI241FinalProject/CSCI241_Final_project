@@ -24,6 +24,14 @@ public class FPiece : ScriptableObject
         y = yy;
     }
 
+    public FPiece(int xx, int yy, bool white, bool king)
+    {
+        x = xx;
+        y = yy;
+        isKing = king;
+        isWhite = white;
+    }
+
     //Function to check if there is a case where the player is forced to make a killing move
     public bool IsForceMovement(FPiece[,] board, int x, int y)
     {

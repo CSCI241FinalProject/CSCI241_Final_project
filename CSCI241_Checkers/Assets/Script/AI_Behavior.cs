@@ -20,7 +20,6 @@ public class AI_Behavior : CheckersBoard
     readonly int ATRISK = -3;
     readonly int KINGATRISK = -4;
 
-    int treeCount = 0;
 
     //Function that returns all the black pieces on the board as a list
     public List<FPiece> GetBlackPieces(FPiece[,] board)
@@ -71,8 +70,8 @@ public class AI_Behavior : CheckersBoard
 
                     FPiece current = new FPiece
                     {
-                        x = x,
-                        y = y,
+                        x = board[x, y].x,
+                        y = board[x, y].y,
                         isKing = board[x, y].isKing,
                         isWhite = board[x, y].isWhite
                     };
@@ -111,8 +110,8 @@ public class AI_Behavior : CheckersBoard
 
                     FPiece current = new FPiece
                     {
-                        x = x,
-                        y = y,
+                        x = board[x, y].x,
+                        y = board[x, y].y,
                         isKing = board[x, y].isKing,
                         isWhite = board[x, y].isWhite
                     };
@@ -339,7 +338,7 @@ public class AI_Behavior : CheckersBoard
 
 
         //Make a copy of the board that has been passed in
-        FPiece[,] newBoard = thisMove.GetBoard();
+        FPiece[,] newBoard = CopyBoard(thisMove.GetBoard());
 
         //Check if the move is valid 
         if (source.CheckMoveValidation(newBoard, source.x, source.y, dest.x, dest.y))
@@ -362,26 +361,31 @@ public class AI_Behavior : CheckersBoard
                 {
                     newBoard[((x1 + x2) / 2), ((y1 + y2) / 2)] = null;
                 }
+                else {
+                    return thisMove;
+                }
             }
 
+            FPiece newSource = new FPiece(source.x, source.y, source.isWhite, source.isKing);
+
             //move the piece
-            newBoard[x2, y2] = source;
+            newBoard[x2, y2] = newSource;
             newBoard[x1, y1] = null;
 
             //Update the x and y vaules of the source piece
-            source.x = x2;
-            source.y = y2;
+            newSource.x = x2;
+            newSource.y = y2;
 
             //check to see if the source piece needs to be turned into a king 
             //check for white piece 
-            if ((source.isWhite) && (y2 == 7))
+            if ((newSource.isWhite) && (y2 == 7))
             {
-                source.isKing = true;
+                newSource.isKing = true;
             }
             //check for black piece
-            else if ((!source.isWhite) && (y2 == 0))
+            else if ((!newSource.isWhite) && (y2 == 0))
             {
-                source.isKing = true;
+                newSource.isKing = true;
             }
 
         }
@@ -389,7 +393,7 @@ public class AI_Behavior : CheckersBoard
 
         Move result = new Move(thisMove.GetOrigin(), thisMove.GetDestination(), newBoard);
         result.score = newScore;
-        return result;
+        return thisMove;
     }
 
 
@@ -411,17 +415,43 @@ public class AI_Behavior : CheckersBoard
     private Move GetBestMove(List<Move> list)
     {
 
+
+        print("All Possible moves are");
+        foreach (Move n in list)
+        {
+            int[] resul = new int[4];
+
+            resul[0] = n.GetOrigin().x;
+            resul[1] = n.GetOrigin().y;
+            resul[2] = n.GetDestination().x;
+            resul[3] = n.GetDestination().y;
+
+
+
+            Debug.Log(resul[0]);
+            Debug.Log(resul[1]);
+            Debug.Log("TO: ");
+            Debug.Log(resul[2]);
+            Debug.Log(resul[3]);
+            Debug.Log(" ");
+
+        }
+
+
+
+
+
         Move result = new Move();
 
-        result = list[0];
+        //.result = list[0];
 
         //loop through the list of final board states and return the move with the max score 
         foreach (Move move in list)
         {
-            if (move.score >= result.score)
-            {
-                result = move;
-            }
+                if ((move.score >= result.score))
+                {
+                    result = move;
+                }
         }
         return result;
     }
@@ -445,17 +475,10 @@ public class AI_Behavior : CheckersBoard
         }
 
 
-
-
         FPiece[,] board = move.GetBoard();
 
         //Create a list of pieces of current color
         List<FPiece> pieces = new List<FPiece>();
-
-
-
-
-
         //get a list of origin pieces
         if (isWhite)
         {
@@ -477,8 +500,6 @@ public class AI_Behavior : CheckersBoard
             {
                 pieces = tempWhites;
             }
-
-
         }
         else
         {
@@ -548,7 +569,6 @@ public class AI_Behavior : CheckersBoard
         foreach (Move n in newList)
         {
             ChildMove(n, !isWhite, depth - 1);
-            treeCount++;
         }
 
     }
@@ -586,6 +606,15 @@ public class AI_Behavior : CheckersBoard
             blackPieces = tempBlacks;
         }
 
+        
+        print("Possible Blacks:");
+        foreach (FPiece x in blackPieces) {
+            print(x.x);
+            print(x.y);
+            print(" ");
+        }
+        
+
 
 
         List<Move> moves = new List<Move>();//list to store the list of moves
@@ -610,9 +639,9 @@ public class AI_Behavior : CheckersBoard
 
 
                 //generate a phantom piece for the origin 
-                FPiece origin = new FPiece(piece.x, piece.y);
+                //FPiece origin = new FPiece(piece.x, piece.y);
 
-                Move newMove = new Move(origin, destination, newBoard);
+                Move newMove = new Move(piece, destination, newBoard);
                 Move resultantMove = MakeVirtualMove(piece, destination, newMove);
                 moves.Add(resultantMove); //add the virtual move into the board
             }
@@ -622,7 +651,7 @@ public class AI_Behavior : CheckersBoard
         foreach (Move thismove in moves)
         {
             ChildMove(thismove, true, 1);
-            treeCount++;
+
         }
 
 
@@ -630,6 +659,11 @@ public class AI_Behavior : CheckersBoard
 
         Move finalMove = GetBestMove(finalList); //getting the best move among the list of moves
         finalList = null; //resetting the global variable 
+
+
+        
+
+
 
         result[0] = finalMove.GetOrigin().x;
         result[1] = finalMove.GetOrigin().y;
