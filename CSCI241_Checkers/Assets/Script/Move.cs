@@ -81,8 +81,7 @@ public class Move : ScriptableObject
     //function to update score; 
     public void AddScore(int ScoreUpdate) {
         this.score = this.score + ScoreUpdate;
-        //Debug.Log(ScoreUpdate);
-        //Debug.Log(this.score);
+       
     }
 
     public int GetScore() {

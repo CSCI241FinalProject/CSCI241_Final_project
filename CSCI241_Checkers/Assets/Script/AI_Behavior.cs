@@ -13,7 +13,7 @@ public class AI_Behavior : CheckersBoard
     readonly int MAKEKING = 4;
     readonly int OPPATRISK = 1;
     readonly int OPPKINGATRISK = 3;
-    
+
 
     //Define defensive points 
     readonly int ATRISK = -1;
@@ -28,7 +28,7 @@ public class AI_Behavior : CheckersBoard
 
     //Function that copies the original board and creates a copy in Fpiece
     public FPiece[,] CopyMainBoard(Piece[,] board)
-    {   
+    {
         //New board to store the result in
         FPiece[,] result = new FPiece[8, 8];
 
@@ -142,11 +142,11 @@ public class AI_Behavior : CheckersBoard
         return result;
     }
 
-    
-    
-    
-    
-   
+
+
+
+
+
     //Function that returns all the white pieces on the board as a list
     public List<FPiece> GetWhitePieces(FPiece[,] board)
     {
@@ -334,11 +334,11 @@ public class AI_Behavior : CheckersBoard
                 //All places checked, return result
                 return result;
             }
-            
-            if(!p.isWhite)
+
+            if (!p.isWhite)
             {
                 //if the piece is black
-                
+
                 //Check bottom left
                 if (p.CheckMoveValidation(board, p.x, p.y, p.x - 1, p.y - 1))
                 {
@@ -367,7 +367,7 @@ public class AI_Behavior : CheckersBoard
         //If it reaches here, there aren't any possible moves. Return empty list
         return result;
     }
-    
+
 
 
 
@@ -384,7 +384,8 @@ public class AI_Behavior : CheckersBoard
         {
             wasKing = true;
         }
-        else {
+        else
+        {
             wasKing = false;
         }
 
@@ -421,9 +422,10 @@ public class AI_Behavior : CheckersBoard
                         {
                             newScore = newScore + CAPTUREKING;
                         }
-                        else {
+                        else
+                        {
                             //IF AIKING was killed
-                            newScore = newScore + KINGDEAD; 
+                            newScore = newScore + KINGDEAD;
                         }
 
                     }
@@ -435,9 +437,10 @@ public class AI_Behavior : CheckersBoard
                             //IF AI piece killed white piece
                             newScore = newScore + CAPTUREPIECE;
                         }
-                        else {
+                        else
+                        {
                             //IF AIpiece was killed by white
-                            newScore = newScore + LOSTPIECE; 
+                            newScore = newScore + LOSTPIECE;
                         }
                     }
                 }
@@ -474,13 +477,15 @@ public class AI_Behavior : CheckersBoard
             }
 
             //If the newSource wasn't king before, but is now, append score 
-            if (!wasKing && newSource.isKing) {
+            if (!wasKing && newSource.isKing)
+            {
 
                 if (!newSource.isWhite)
                 {
                     newScore = newScore + MAKEKING;
                 }
-                else {
+                else
+                {
                     newScore = newScore + MAKEOPPKING;
                 }
             }
@@ -494,13 +499,13 @@ public class AI_Behavior : CheckersBoard
             if (newSource.isWhite)
             {
                 // check index out of bounds
-                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7))  && (newBoard[x2 + 1, y2 + 1] != null))
+                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)) && (newBoard[x2 + 1, y2 + 1] != null))
                 {
                     //if there's a black piece to the top right and an empty spot to the bottom left, it can be taken
                     if (!newBoard[x2 + 1, y2 + 1].isWhite)
                     {
                         // check index out of bounds for bottom left
-                        if (!(((x2 - 1 )< 0) || ((x2 - 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)))
+                        if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)))
                         {
                             if (newBoard[x2 - 1, y2 - 1] == null)
                             {
@@ -567,13 +572,13 @@ public class AI_Behavior : CheckersBoard
                 }
 
                 // check index out of bounds
-                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)) && (newBoard[x2 + 1, y2 -1] != null))
+                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)) && (newBoard[x2 + 1, y2 - 1] != null))
                 {
                     //if there's a black king to the bottom right and an empty spot to the top left, it can be taken
                     if (!newBoard[x2 + 1, y2 - 1].isWhite && newBoard[x2 + 1, y2 - 1].isKing)
                     {
                         // check index out of bounds
-                        if (!(((x2 - 1) < 0) || ((x2- 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)))
+                        if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)))
                         {
                             if (newBoard[x2 - 1, y2 + 1] == null)
                             {
@@ -697,6 +702,9 @@ public class AI_Behavior : CheckersBoard
 
 
 
+
+
+
         //print(newScore);
 
         //Finally, create a new Move with the score for this movement, the new board and the original Starting moves
@@ -717,7 +725,7 @@ public class AI_Behavior : CheckersBoard
     private Move GetBestMove(List<Move> list)
     {
 
-        
+        /*
         print("All Possible moves are");
         foreach (Move n in list)
         {
@@ -742,22 +750,22 @@ public class AI_Behavior : CheckersBoard
 
 
         }
-        
+        */
 
 
 
 
         Move result = new Move();
+        result.AddScore(-999999);
 
-        result = list[0];
 
         //loop through the list of final board states and return the move with the max score 
         foreach (Move move in list)
         {
-                if ((move.GetScore() >= result.GetScore()))
-                {
-                    result = move;
-                }
+            if ((move.GetScore() >= result.GetScore()))
+            {
+                result = move;
+            }
         }
         return result;
     }
@@ -771,13 +779,16 @@ public class AI_Behavior : CheckersBoard
     {
 
 
+
         //base case. add all the children moves into the global variable and return  
         if (depth <= 0)
         {
             finalList.Add(move);
-            print(move.GetScore());
+            //print(move.GetScore());
             return;
         }
+
+
 
 
         FPiece[,] board = move.GetBoard();
@@ -830,6 +841,7 @@ public class AI_Behavior : CheckersBoard
         }
 
 
+
         List<Move> newList = new List<Move>(); //create new list to set the children of each of this current move
 
 
@@ -839,22 +851,6 @@ public class AI_Behavior : CheckersBoard
 
             //Generate a list of all possible moves
             List<FPiece> destinations = GetPossibleMoves(origin, board);
-
-           /* 
-            print("*********************************************");
-    
-            print("Source: ");
-            print(origin.x);
-            print(origin.y);
-            print("Destinations");
-            foreach (FPiece mo in destinations) {
-                print(mo.x);
-                print(mo.y);
-                print("--");
-            }
-            print("**********************************************");
-            */
-
 
             //Once you have a list of all possible moves. Carry out the virtual move on the board
             foreach (FPiece destination in destinations)
@@ -875,7 +871,6 @@ public class AI_Behavior : CheckersBoard
         foreach (Move n in newList)
         {
             ChildMove(n, !isWhite, depth - 1);
-            //print(n.GetScore());
         }
 
     }
@@ -890,7 +885,6 @@ public class AI_Behavior : CheckersBoard
     {
 
         int[] result = new int[4];
-
 
         FPiece[,] board = CopyMainBoard(mainBoard);
 
@@ -914,15 +908,29 @@ public class AI_Behavior : CheckersBoard
         {
             blackPieces = tempBlacks;
         }
+        else
+        {
+            //check if it was forced and now only one white is left on board, then game won
+            List<FPiece> whitePieces = GetWhitePieces(board);
+            if (whitePieces.Count == 1)
+            {
 
-        /*
-        print("Possible Blacks:");
-        foreach (FPiece x in blackPieces) {
-            print(x.x);
-            print(x.y);
-            print(" ");
+                List<FPiece> done = GetPossibleMoves(blackPieces[0], board);
+
+
+                result[0] = blackPieces[0].x;
+                result[1] = blackPieces[0].y;
+                result[2] = done[0].x;
+                result[3] = done[0].y;
+
+                return result;
+
+            }
+
+
         }
-        */
+
+
 
 
 
@@ -931,35 +939,16 @@ public class AI_Behavior : CheckersBoard
         //For each black piece on the board
         foreach (FPiece piece in blackPieces)
         {
-            /*
-            print("*********************************************");
-
-            print("Source: ");
+            print("--");
+            print("Possible black: ");
             print(piece.x);
             print(piece.y);
-            print("TO THESE");
-            print("Destinations");
-            */
-            //get a list of all possible destinations
+            print("--");
             List<FPiece> destinations = GetPossibleMoves(piece, board);
 
-            /*
-            foreach (FPiece mo in destinations)
-            {
-                print(mo.x);
-                print(mo.y);
-                print("--");
-            }
-            print("**********************************************");
-            */
-
-            //for each destination1
+            //for each destination
             foreach (FPiece destination in destinations)
             {
-
-           
-
-
 
                 FPiece[,] newBoard = CopyBoard(board);
                 //make a new move and carry out a virual move on that board 
@@ -970,7 +959,7 @@ public class AI_Behavior : CheckersBoard
 
                 Move newMove = new Move(piece, destination, newBoard);
                 Move resultantMove = MakeVirtualMove(piece, destination, newMove);
-                print(resultantMove.GetScore());
+                //print(resultantMove.GetScore());
                 moves.Add(resultantMove); //add the virtual move into the board
             }
         }
@@ -990,7 +979,7 @@ public class AI_Behavior : CheckersBoard
         finalList = null; //resetting the global variable 
 
 
-        
+
 
 
 
@@ -999,7 +988,7 @@ public class AI_Behavior : CheckersBoard
         result[2] = finalMove.GetDestination().x;
         result[3] = finalMove.GetDestination().y;
 
-        /*
+
         Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         Debug.Log("BestMove: ");
         //Debug.Log(treeCount);
@@ -1009,7 +998,7 @@ public class AI_Behavior : CheckersBoard
         Debug.Log(result[2]);
         Debug.Log(result[3]);
         Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        */
+
 
 
 
