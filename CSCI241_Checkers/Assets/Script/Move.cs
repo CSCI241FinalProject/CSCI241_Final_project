@@ -9,7 +9,7 @@ public class Move : ScriptableObject
     private FPiece org;
     private FPiece dest;
     private FPiece[,] board;
-    public int score;
+    private int score;
     private List<Move> children;
 
 
@@ -81,6 +81,12 @@ public class Move : ScriptableObject
     //function to update score; 
     public void AddScore(int ScoreUpdate) {
         this.score = this.score + ScoreUpdate;
+        //Debug.Log(ScoreUpdate);
+        //Debug.Log(this.score);
+    }
+
+    public int GetScore() {
+        return this.score;
     }
 
 }

@@ -11,11 +11,16 @@ public class AI_Behavior : CheckersBoard
     readonly int CAPTUREKING = 4;
     readonly int CAPTUREDOUBLE = 5;
     readonly int MAKEKING = 4;
+    readonly int OPPATRISK = 1;
+    readonly int OPPKINGATRISK = 3;
+    
 
     //Define defensive points 
-    readonly int ATRISK = -2;
-    readonly int KINGATRISK = -4;
-
+    readonly int ATRISK = -1;
+    readonly int KINGATRISK = -3;
+    readonly int KINGDEAD = -4;
+    readonly int LOSTPIECE = -2;
+    readonly int MAKEOPPKING = -3;
 
 
 
@@ -411,14 +416,29 @@ public class AI_Behavior : CheckersBoard
                     //Check if the king was killed and implement score correspondingly
                     if (dead.isKing)
                     {
-                        newScore = newScore + CAPTUREKING;
+                        //Check if AI killed white
+                        if (dead.isWhite)
+                        {
+                            newScore = newScore + CAPTUREKING;
+                        }
+                        else {
+                            //IF AIKING was killed
+                            newScore = newScore + KINGDEAD; 
+                        }
 
                     }
                     else
                     //If the king wasn't killed, a regular piece was
                     {
-                        newScore = newScore + CAPTUREPIECE;
-
+                        if (dead.isWhite)
+                        {
+                            //IF AI piece killed white piece
+                            newScore = newScore + CAPTUREPIECE;
+                        }
+                        else {
+                            //IF AIpiece was killed by white
+                            newScore = newScore + LOSTPIECE; 
+                        }
                     }
                 }
                 else
@@ -455,27 +475,236 @@ public class AI_Behavior : CheckersBoard
 
             //If the newSource wasn't king before, but is now, append score 
             if (!wasKing && newSource.isKing) {
-                newScore = newScore + MAKEKING;
+
+                if (!newSource.isWhite)
+                {
+                    newScore = newScore + MAKEKING;
+                }
+                else {
+                    newScore = newScore + MAKEOPPKING;
+                }
             }
 
 
 
             //Now do the rest of Score checking for the current board status starting here: TODO
+            //REMEMBER AI IS BLACK IN COLOR so only take into account the score for black color. 
+            //NOW ALL WE NEED TO DO IS CALCULATE "AT-RISK" FACTORS.
+            //if the piece that made a move is a while piece, check to see if it can be taken by black pieces
+            if (newSource.isWhite)
+            {
+                // check index out of bounds
+                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7))  && (newBoard[x2 + 1, y2 + 1] != null))
+                {
+                    //if there's a black piece to the top right and an empty spot to the bottom left, it can be taken
+                    if (!newBoard[x2 + 1, y2 + 1].isWhite)
+                    {
+                        // check index out of bounds for bottom left
+                        if (!(((x2 - 1 )< 0) || ((x2 - 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)))
+                        {
+                            if (newBoard[x2 - 1, y2 - 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + OPPKINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + OPPATRISK;
+                                }
+                            }
+                        }
 
+                    }
+                }
 
+                // check index out of bounds
+                if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)) && (newBoard[x2 - 1, y2 + 1] != null))
+                {
+                    //if there's a black piece to the top left and an empty spot to the bottom right, it can be taken
+                    if (!newBoard[x2 - 1, y2 + 1].isWhite)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)))
+                        {
+                            if (newBoard[x2 + 1, y2 - 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + OPPKINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + OPPATRISK;
+                                }
+                            }
+                        }
+                    }
+                }
 
+                // check index out of bounds
+                if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)) && (newBoard[x2 - 1, y2 - 1] != null))
+                {
+                    //if there's a black king to the bottom left and an empty spot to the top right, it can be taken
+                    if (!newBoard[x2 - 1, y2 - 1].isWhite && newBoard[x2 - 1, y2 - 1].isKing)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)))
+                        {
+                            if (newBoard[x2 + 1, y2 + 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + OPPKINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + OPPATRISK;
+                                }
+                            }
+                        }
+                    }
+                }
 
+                // check index out of bounds
+                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)) && (newBoard[x2 + 1, y2 -1] != null))
+                {
+                    //if there's a black king to the bottom right and an empty spot to the top left, it can be taken
+                    if (!newBoard[x2 + 1, y2 - 1].isWhite && newBoard[x2 + 1, y2 - 1].isKing)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 - 1) < 0) || ((x2- 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)))
+                        {
+                            if (newBoard[x2 - 1, y2 + 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + OPPKINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + OPPATRISK;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
+            //if the piece  that made a move is a black piece, check to see if it can be taken by white pieces
+            if (!newSource.isWhite)
+            {
+                // check index out of bounds
+                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)) && (newBoard[x2 + 1, y2 - 1] != null))
+                {
+                    //if there's a white piece to the bottom right and an empty spot to the top left, it can be taken
+                    if (newBoard[x2 + 1, y2 - 1].isWhite)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)))
+                        {
+                            if (newBoard[x2 - 1, y2 + 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + KINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + ATRISK;
+                                }
+                            }
+                        }
 
+                    }
+                }
+
+                // check index out of bounds
+                if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)) && (newBoard[x2 - 1, y2 - 1] != null))
+                {
+                    //if there's a white piece to the bottom left and an empty spot to the top right, it can be taken
+                    if (newBoard[x2 - 1, y2 - 1].isWhite)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)))
+                        {
+                            if (newBoard[x2 + 1, y2 + 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + KINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + ATRISK;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // check index out of bounds
+                if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)) && (newBoard[x2 - 1, y2 + 1] != null))
+                {
+                    //if there's a white king to the top left and an empty spot to the bottom right, it can be taken
+                    if (newBoard[x2 - 1, y2 + 1].isWhite && newBoard[x2 - 1, y2 + 1].isKing)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)))
+                        {
+                            if (newBoard[x2 + 1, y2 - 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + KINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + ATRISK;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // check index out of bounds
+                if (!(((x2 + 1) < 0) || ((x2 + 1) > 7) || ((y2 + 1) < 0) || ((y2 + 1) > 7)) && (newBoard[x2 + 1, y2 + 1] != null))
+                {
+                    //if there's a white king to the top right and an empty spot to the bottom left, it can be taken
+                    if (newBoard[x2 + 1, dest.y + 1].isWhite && newBoard[x2 + 1, y2 + 1].isKing)
+                    {
+                        // check index out of bounds
+                        if (!(((x2 - 1) < 0) || ((x2 - 1) > 7) || ((y2 - 1) < 0) || ((y2 - 1) > 7)))
+                        {
+                            if (newBoard[x2 - 1, y2 - 1] == null)
+                            {
+                                if (newSource.isKing)
+                                {
+                                    newScore = newScore + KINGATRISK;
+                                }
+                                else
+                                {
+                                    newScore = newScore + ATRISK;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
         }
 
+
+
+
+        //print(newScore);
+
         //Finally, create a new Move with the score for this movement, the new board and the original Starting moves
         Move result = new Move(thisMove.GetOrigin(), thisMove.GetDestination(), newBoard);
-        result.score = newScore;
+        result.AddScore(newScore);
 
         //Return the move
-        return thisMove;
+        return result;
     }
 
 
@@ -488,7 +717,7 @@ public class AI_Behavior : CheckersBoard
     private Move GetBestMove(List<Move> list)
     {
 
-        /*
+        
         print("All Possible moves are");
         foreach (Move n in list)
         {
@@ -507,21 +736,25 @@ public class AI_Behavior : CheckersBoard
             Debug.Log(resul[2]);
             Debug.Log(resul[3]);
             Debug.Log(" ");
+            Debug.Log("Move Score:");
+            Debug.Log(n.GetScore());
+            Debug.Log("----");
+
 
         }
-        */
+        
 
 
 
 
         Move result = new Move();
 
-        //.result = list[0];
+        result = list[0];
 
         //loop through the list of final board states and return the move with the max score 
         foreach (Move move in list)
         {
-                if ((move.score >= result.score))
+                if ((move.GetScore() >= result.GetScore()))
                 {
                     result = move;
                 }
@@ -542,6 +775,7 @@ public class AI_Behavior : CheckersBoard
         if (depth <= 0)
         {
             finalList.Add(move);
+            print(move.GetScore());
             return;
         }
 
@@ -606,7 +840,7 @@ public class AI_Behavior : CheckersBoard
             //Generate a list of all possible moves
             List<FPiece> destinations = GetPossibleMoves(origin, board);
 
-            /*
+           /* 
             print("*********************************************");
     
             print("Source: ");
@@ -629,6 +863,7 @@ public class AI_Behavior : CheckersBoard
                 FPiece[,] newBoard = CopyBoard(board);
                 //make a new move and carry out a virual move on that board 
                 Move newM = new Move(move.GetOrigin(), move.GetDestination(), newBoard);
+                newM.AddScore(move.GetScore());
                 //Make virtual move here and call the recursive function on the following: 
                 Move newMove = MakeVirtualMove(origin, destination, newM);
                 newList.Add(newMove);
@@ -640,6 +875,7 @@ public class AI_Behavior : CheckersBoard
         foreach (Move n in newList)
         {
             ChildMove(n, !isWhite, depth - 1);
+            //print(n.GetScore());
         }
 
     }
@@ -695,7 +931,7 @@ public class AI_Behavior : CheckersBoard
         //For each black piece on the board
         foreach (FPiece piece in blackPieces)
         {
-
+            /*
             print("*********************************************");
 
             print("Source: ");
@@ -703,11 +939,11 @@ public class AI_Behavior : CheckersBoard
             print(piece.y);
             print("TO THESE");
             print("Destinations");
-
+            */
             //get a list of all possible destinations
             List<FPiece> destinations = GetPossibleMoves(piece, board);
 
-
+            /*
             foreach (FPiece mo in destinations)
             {
                 print(mo.x);
@@ -715,7 +951,7 @@ public class AI_Behavior : CheckersBoard
                 print("--");
             }
             print("**********************************************");
-
+            */
 
             //for each destination1
             foreach (FPiece destination in destinations)
@@ -734,6 +970,7 @@ public class AI_Behavior : CheckersBoard
 
                 Move newMove = new Move(piece, destination, newBoard);
                 Move resultantMove = MakeVirtualMove(piece, destination, newMove);
+                print(resultantMove.GetScore());
                 moves.Add(resultantMove); //add the virtual move into the board
             }
         }
@@ -742,6 +979,7 @@ public class AI_Behavior : CheckersBoard
         foreach (Move thismove in moves)
         {
             ChildMove(thismove, true, 1);
+            //print(thismove.GetScore());
 
         }
 
@@ -761,7 +999,7 @@ public class AI_Behavior : CheckersBoard
         result[2] = finalMove.GetDestination().x;
         result[3] = finalMove.GetDestination().y;
 
-
+        /*
         Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         Debug.Log("BestMove: ");
         //Debug.Log(treeCount);
@@ -771,7 +1009,7 @@ public class AI_Behavior : CheckersBoard
         Debug.Log(result[2]);
         Debug.Log(result[3]);
         Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-
+        */
 
 
 
