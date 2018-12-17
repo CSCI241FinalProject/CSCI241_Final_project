@@ -5,19 +5,19 @@ using UnityEngine.SceneManagement;
 public class AI_Behavior : CheckersBoard
 {
     //Define the offensive points 
-    readonly int CAPTUREPIECE = 2;
-    readonly int CAPTUREKING = 4;
-    readonly int CAPTUREDOUBLE = 5;
-    readonly int MAKEKING = 4;
-    readonly int OPPATRISK = 1;
-    readonly int OPPKINGATRISK = 3;
+    private readonly int CAPTUREPIECE = 2;
+    private readonly int CAPTUREKING = 4;
+    private readonly int CAPTUREDOUBLE = 5;
+    private readonly int MAKEKING = 4;
+    private readonly int OPPATRISK = 1;
+    private readonly int OPPKINGATRISK = 3;
 
     //Define defensive points 
-    readonly int ATRISK = -1;
-    readonly int KINGATRISK = -3;
-    readonly int KINGDEAD = -4;
-    readonly int LOSTPIECE = -2;
-    readonly int MAKEOPPKING = -3;
+    private readonly int ATRISK = -1;
+    private readonly int KINGATRISK = -3;
+    private readonly int KINGDEAD = -4;
+    private readonly int LOSTPIECE = -2;
+    private readonly int MAKEOPPKING = -3;
 
     //Used for debugging purposes:
     //Total number of nodes used in the current AI turn
@@ -31,7 +31,7 @@ public class AI_Behavior : CheckersBoard
     //Using score for depth 
     List<Move> abList = new List<Move>(); 
   
-    readonly int MAXDEPTH = 3; 
+     int MAXDEPTH = 3; 
 
    
     //Function that copies the original board and creates a copy in Fpiece
