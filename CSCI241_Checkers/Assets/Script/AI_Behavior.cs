@@ -13,6 +13,8 @@ public class AI_Behavior : CheckersBoard
     readonly int OPPKINGATRISK = 3;
 
 
+    int nodeCount = 0; 
+
     //Define defensive points 
     readonly int ATRISK = -1;
     readonly int KINGATRISK = -3;
@@ -20,10 +22,15 @@ public class AI_Behavior : CheckersBoard
     readonly int LOSTPIECE = -2;
     readonly int MAKEOPPKING = -3;
 
+    //Using a Move node to store the alpha beta pruning values and depth. 
+    //Used org.x as max val 
+    //used dest.x as min val
+    //used score as depth 
+    List<Move> abList = new List<Move>();
+  
+    readonly int MAXDEPTH = 3; 
 
-
-
-
+   
     //Function that copies the original board and creates a copy in Fpiece
     public FPiece[,] CopyMainBoard(Piece[,] board)
     {
@@ -64,9 +71,6 @@ public class AI_Behavior : CheckersBoard
 
         return result;
     }
-
-
-
 
 
     //Function that creates a copy of FPiece[,]
@@ -114,9 +118,6 @@ public class AI_Behavior : CheckersBoard
 
 
 
-
-
-
     //Function that returns all the black pieces on the board as a list
     public List<FPiece> GetBlackPieces(FPiece[,] board)
     {
@@ -139,9 +140,6 @@ public class AI_Behavior : CheckersBoard
         //Return the list
         return result;
     }
-
-
-
 
 
 
@@ -168,9 +166,6 @@ public class AI_Behavior : CheckersBoard
         //Return the resultant list
         return result;
     }
-
-
-
 
 
 
@@ -364,8 +359,6 @@ public class AI_Behavior : CheckersBoard
         //If it reaches here, there aren't any possible moves. Return empty list
         return result;
     }
-
-
 
 
 
@@ -706,9 +699,6 @@ public class AI_Behavior : CheckersBoard
 
 
 
-
-
-
     List<Move> finalList = new List<Move>(); //global variable to store the end board states of the minimax algorithm
     //function to get the best move from a list of Moves
     private Move GetBestMove(List<Move> list)
@@ -758,17 +748,169 @@ public class AI_Behavior : CheckersBoard
 
 
 
+    //Function to prune the list that has been passed in 
+    private List<Move> PruneList(List<Move> list, int depth)
+    {
+
+        //print("-------------------");
+        //print("Depth: " + depth);
+
+
+        List<Move> result = new List<Move>();
+        Move abNode = new Move();
+
+        
+        if (abList.Count > depth) {
+            abNode = abList[depth];
+        }
+        else if (abList.Count == depth)
+        {
+            abNode = new Move();
+            abNode.AddScore(depth);
+            abList.Add(abNode);
+
+            
+            int mi = 9999;
+            int ma = -9999;
+
+            foreach (Move item in list)
+            {
+                if (item.GetScore() < mi)
+                {
+                    mi = item.GetScore();
+                }
+                if (item.GetScore() > ma)
+                {
+                    ma = item.GetScore();
+                }
+            }
+            abNode.SetOrigin(ma, 0);
+            abNode.SetDestination(mi, 0);
+            //print("First node at depth. Returning entire list");
+            return list;
+        }
+        
+
+        //loop through the list and find the min and the max scores for the current list
+        int minCur = 9999;
+        int maxCur = -9999;
+        int max = abNode.GetOrigin().x;
+        int min = abNode.GetDestination().x;
+
+  
+
+        foreach (Move item in list) {
+            if (item.GetScore() < minCur) {
+                minCur = item.GetScore();
+            }
+            if (item.GetScore() > maxCur) {
+                maxCur = item.GetScore(); 
+            }
+        }
+        /*
+        print("Depth Min :" + min);
+        print("Depth Max :" + max);
+        print("Current Min :" + minCur);
+        print("Current Max :" + maxCur);
+
+        print("-------------------");
+        print("Pruning!");
+        */
+        // 1) if new list is within range
+        if ((max >= maxCur) && (maxCur >= min) && (minCur <= max) && (minCur <=min))
+        {
+            //print("Current max is more than overall min and curmin is less than overall min. Regular pruning.");
+            //loop through list and add only those that have max vals more than min
+            foreach (Move item in list)
+            {
+                if (item.GetScore() >= min)
+                {
+                    result.Add(item);
+
+                }
+            }
+           // print("-------------------");
+            return result;
+        }
+
+        // 2) if current max is more than overall max 
+        if (maxCur > max) {
+
+            //if mincur is also more than max
+            if (minCur > max)
+            {
+                abNode.SetOrigin(maxCur, 0);
+                abNode.SetDestination(minCur, 0);
+            }
+            else {
+                abNode.SetOrigin(maxCur, 0);
+                abNode.SetDestination(max, 0);
+            }
+
+            int newMax = abNode.GetOrigin().x;
+            int newMin = abNode.GetDestination().x;
+
+            //print("Both min and max Vals changed");
+            //print("New Depth Max:" + newMax);
+            //print("New Depth min :" + newMin);
+
+            foreach (Move item in list)
+            {
+                if (item.GetScore() >= newMin)
+                {
+                    result.Add(item);
+
+                    //print("Kept :" + item.GetScore());
+                }
+            }
+           // print("-------------------");
+            return result;
+
+
+        }
+
+        // 3) If the max val for current list is less than overall min, discard everything 
+        if (maxCur < min) {
+            //print("Current max is less than overall min. Prune Everything.");
+            return result;
+        }
+
+        // 4) if the current min is more than overall min, change the overall min val 
+        if ((minCur > min) && (maxCur<max)) {
+            //print("Current min is more than overall min");
+            //print("Min Val Changed!");
+            //print("New Depth min :" + minCur);
+            //abNode.SetDestination(minCur, 0);
+            //then do the regular processing
+            //loop through list and add only those that have max vals more than min
+            foreach (Move item in list)
+            {
+                if (item.GetScore() >= minCur)
+                {
+                    result.Add(item);
+
+                    //print("Kept :" + item.GetScore());
+                }
+               
+            }
+            //print("-------------------");
+            return result;
+        }
+
+        //print("None fit. ERROR! Return original list!!!");
+        return list; 
+    }
+
 
     //Main recursive function of the bunch
     private void ChildMove(Move move, bool isWhite, int depth)
     {
-
-
-
+       
         //base case. add all the children moves into the global variable and return  
-        if (depth <= 0)
+        if (depth == MAXDEPTH)
         {
             finalList.Add(move);
+            nodeCount++;
             //print(move.GetScore());
             return;
         }
@@ -849,28 +991,25 @@ public class AI_Behavior : CheckersBoard
             }
         }
 
-
+        newList = PruneList(newList, depth);
         //call recursive function on each move in newList with depth-1, oppposite color.
         foreach (Move n in newList)
         {
             //Check to see if the resultant board have colors of the board or not
             if (GetBlackPieces(n.GetBoard()).Count == 0)
             {
-                ChildMove(n, !isWhite, 0);
+                ChildMove(n, !isWhite, MAXDEPTH);
 
             }
             else if (GetWhitePieces(n.GetBoard()).Count == 0)
             {
-                ChildMove(n, !isWhite, 0);
+                ChildMove(n, !isWhite, MAXDEPTH);
             }
             else
-            { ChildMove(n, !isWhite, depth - 1); }
+            { ChildMove(n, !isWhite, depth + 1); }
         }
 
     }
-
-
-
 
 
 
@@ -984,14 +1123,9 @@ public class AI_Behavior : CheckersBoard
         //For each black piece on the board
         foreach (FPiece piece in blackPieces)
         {
-            /*
-            print("--");
-            print("Possible black: ");
-            print(piece.x);
-            print(piece.y);
-            print("--");*/
+           
             List<FPiece> destinations = GetPossibleMoves(piece, board);
-            
+
 
             //for each destination
             foreach (FPiece destination in destinations)
@@ -1010,18 +1144,19 @@ public class AI_Behavior : CheckersBoard
             }
         }
 
+         moves = PruneList(moves, 0);
         //now call the recursive function on each of the child moves carried out 
         foreach (Move n in moves)
         {
             //Check to see if the resultant board have colors of the board or not
             if (GetBlackPieces(n.GetBoard()).Count == 0)
             {
-                ChildMove(n, false, 0);
+                ChildMove(n, false, MAXDEPTH);
 
             }
             else if (GetWhitePieces(n.GetBoard()).Count == 0)
             {
-                ChildMove(n, false, 0);
+                ChildMove(n, false, MAXDEPTH);
             }
             else
             { ChildMove(n, true, 1); }
@@ -1030,28 +1165,14 @@ public class AI_Behavior : CheckersBoard
         //do the resetting, and returning here
         Move finalMove = GetBestMove(finalList); //getting the best move among the list of moves
         finalList = null; //resetting the global variable 
+        abList = null; //resetting the pruning list
 
         result[0] = finalMove.GetOrigin().x;
         result[1] = finalMove.GetOrigin().y;
         result[2] = finalMove.GetDestination().x;
         result[3] = finalMove.GetDestination().y;
 
-
-        /*
-
-        Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        Debug.Log("BestMove: ");
-        //Debug.Log(treeCount);
-        Debug.Log(result[0]);
-        Debug.Log(result[1]);
-        Debug.Log("TO: ");
-        Debug.Log(result[2]);
-        Debug.Log(result[3]);
-        Debug.Log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        */
-
-
-
+        print(nodeCount);
         return result;
     }
 }

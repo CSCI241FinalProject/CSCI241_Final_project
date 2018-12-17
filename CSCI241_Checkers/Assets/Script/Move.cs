@@ -6,8 +6,8 @@ public class Move : ScriptableObject
 {
 
 
-    private FPiece org;
-    private FPiece dest;
+    private FPiece org = new FPiece(0,0);
+    private FPiece dest= new FPiece(0,0);
     private FPiece[,] board;
     private int score;
     private List<Move> children;
@@ -15,8 +15,8 @@ public class Move : ScriptableObject
 
     //Constructor function 
     public Move() {
-        this.org = new FPiece();
-        this.dest = new FPiece();
+        this.org = new FPiece(0, 0);
+        this.dest = new FPiece(0, 0);
         this.board = new FPiece[8, 8];
         this.score = 0;
         this.children = new List<Move>(); 
@@ -86,6 +86,16 @@ public class Move : ScriptableObject
 
     public int GetScore() {
         return this.score;
+    }
+
+    public void SetOrigin(int xx, int yy) {
+        this.org.x = xx;
+        this.org.y = yy;
+    }
+
+    public void SetDestination(int xx, int yy) {
+        this.dest.x = xx;
+        this.dest.y = yy;
     }
 
 }
