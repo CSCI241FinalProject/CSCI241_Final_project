@@ -12,9 +12,6 @@ public class AI_Behavior : CheckersBoard
     readonly int OPPATRISK = 1;
     readonly int OPPKINGATRISK = 3;
 
-
-    int nodeCount = 0; 
-
     //Define defensive points 
     readonly int ATRISK = -1;
     readonly int KINGATRISK = -3;
@@ -22,11 +19,17 @@ public class AI_Behavior : CheckersBoard
     readonly int LOSTPIECE = -2;
     readonly int MAKEOPPKING = -3;
 
+    //Used for debugging purposes:
+    //Total number of nodes used in the current AI turn
+    int nodeCount = 0;
+
+
+    //NOTES ON ALPHA BETA NODE USEAGE:
     //Using a Move node to store the alpha beta pruning values and depth. 
-    //Used org.x as max val 
-    //used dest.x as min val
-    //used score as depth 
-    List<Move> abList = new List<Move>();
+    //Using org.x for max val (alpha) 
+    //Using dest.x for min val (beta)
+    //Using score for depth 
+    List<Move> abList = new List<Move>(); 
   
     readonly int MAXDEPTH = 3; 
 
@@ -71,8 +74,14 @@ public class AI_Behavior : CheckersBoard
 
         return result;
     }
-
-
+    
+    
+    
+    
+    
+    
+    
+    
     //Function that creates a copy of FPiece[,]
     public FPiece[,] CopyBoard(FPiece[,] board)
     //This function was necessary along with the first one to make virtual moves possible
@@ -118,6 +127,10 @@ public class AI_Behavior : CheckersBoard
 
 
 
+
+
+
+
     //Function that returns all the black pieces on the board as a list
     public List<FPiece> GetBlackPieces(FPiece[,] board)
     {
@@ -140,6 +153,10 @@ public class AI_Behavior : CheckersBoard
         //Return the list
         return result;
     }
+
+
+
+
 
 
 
@@ -166,6 +183,10 @@ public class AI_Behavior : CheckersBoard
         //Return the resultant list
         return result;
     }
+
+
+
+
 
 
 
@@ -362,7 +383,12 @@ public class AI_Behavior : CheckersBoard
 
 
 
+
+
+
+
     //Function to make a virtual move on a virtual board 
+    //Function also scores the current board state, maximizing the score of black piece and minimizing the score of the white one.
     private Move MakeVirtualMove(FPiece source, FPiece dest, Move thisMove)
     {
         //Variable to store the score colleceted by the virtual move made
@@ -386,8 +412,6 @@ public class AI_Behavior : CheckersBoard
         if (source.CheckMoveValidation(newBoard, source.x, source.y, dest.x, dest.y))
         //If the move is valid, carry it out in the virtual board
         {
-
-
             //source co-ordiantes
             int x1 = source.x;
             int y1 = source.y;
@@ -403,7 +427,6 @@ public class AI_Behavior : CheckersBoard
                 if (dead != null)
                 {
                     newBoard[((x1 + x2) / 2), ((y1 + y2) / 2)] = null;
-
                     //Check if the king was killed and implement score correspondingly
                     if (dead.isKing)
                     {
@@ -417,7 +440,6 @@ public class AI_Behavior : CheckersBoard
                             //IF AIKING was killed
                             newScore = newScore + KINGDEAD;
                         }
-
                     }
                     else
                     //If the king wasn't killed, a regular piece was
@@ -441,7 +463,6 @@ public class AI_Behavior : CheckersBoard
                     return thisMove;
                 }
             }
-
 
             //Create a new faux piece that is a duplicate of the source piece to move
             FPiece newSource = new FPiece(source.x, source.y, source.isWhite, source.isKing);
@@ -479,8 +500,6 @@ public class AI_Behavior : CheckersBoard
                     newScore = newScore + MAKEOPPKING;
                 }
             }
-
-
 
             //Now do the rest of Score checking for the current board status starting here: TODO
             //REMEMBER AI IS BLACK IN COLOR so only take into account the score for black color. 
@@ -699,6 +718,10 @@ public class AI_Behavior : CheckersBoard
 
 
 
+
+
+
+
     List<Move> finalList = new List<Move>(); //global variable to store the end board states of the minimax algorithm
     //function to get the best move from a list of Moves
     private Move GetBestMove(List<Move> list)
@@ -748,56 +771,59 @@ public class AI_Behavior : CheckersBoard
 
 
 
+
+
+
+
     //Function to prune the list that has been passed in 
     private List<Move> PruneList(List<Move> list, int depth)
     {
 
-        //print("-------------------");
-        //print("Depth: " + depth);
+        List<Move> result = new List<Move>(); //resulant list of possible moves to pass out after pruning
+        Move abNode = new Move(); //Surrogate piece for further processing
 
-
-        List<Move> result = new List<Move>();
-        Move abNode = new Move();
-
-        
-        if (abList.Count > depth) {
-            abNode = abList[depth];
-        }
-        else if (abList.Count == depth)
+        //Find the node which contains the alpha and beta (max and min) values for the current depth.
         {
-            abNode = new Move();
-            abNode.AddScore(depth);
-            abList.Add(abNode);
-
-            
-            int mi = 9999;
-            int ma = -9999;
-
-            foreach (Move item in list)
+            if (abList.Count > depth)
             {
-                if (item.GetScore() < mi)
+                abNode = abList[depth];
+            }
+            else if (abList.Count == depth)
+            {
+                //If this node is being visited for the first time, create a node and 
+                //add onto the list of depth nodes to compare in subsequent turns
+                abNode = new Move();
+                abNode.AddScore(depth);
+                abList.Add(abNode);
+
+                //determining the max and min vals for this current turn
                 {
-                    mi = item.GetScore();
-                }
-                if (item.GetScore() > ma)
-                {
-                    ma = item.GetScore();
+                    int mi = 9999;
+                    int ma = -9999;
+
+                    foreach (Move item in list)
+                    {
+                        if (item.GetScore() < mi)
+                        {
+                            mi = item.GetScore();
+                        }
+                        if (item.GetScore() > ma)
+                        {
+                            ma = item.GetScore();
+                        }
+                    }
+                    abNode.SetOrigin(ma, 0);
+                    abNode.SetDestination(mi, 0);
+                    return list;
                 }
             }
-            abNode.SetOrigin(ma, 0);
-            abNode.SetDestination(mi, 0);
-            //print("First node at depth. Returning entire list");
-            return list;
         }
         
-
         //loop through the list and find the min and the max scores for the current list
         int minCur = 9999;
         int maxCur = -9999;
         int max = abNode.GetOrigin().x;
         int min = abNode.GetDestination().x;
-
-  
 
         foreach (Move item in list) {
             if (item.GetScore() < minCur) {
@@ -807,114 +833,97 @@ public class AI_Behavior : CheckersBoard
                 maxCur = item.GetScore(); 
             }
         }
-        /*
-        print("Depth Min :" + min);
-        print("Depth Max :" + max);
-        print("Current Min :" + minCur);
-        print("Current Max :" + maxCur);
 
-        print("-------------------");
-        print("Pruning!");
-        */
         // 1) if new list is within range
-        if ((max >= maxCur) && (maxCur >= min) && (minCur <= max) && (minCur <=min))
         {
-            //print("Current max is more than overall min and curmin is less than overall min. Regular pruning.");
-            //loop through list and add only those that have max vals more than min
-            foreach (Move item in list)
+            if ((max >= maxCur) && (maxCur >= min) && (minCur <= max) && (minCur <= min))
             {
-                if (item.GetScore() >= min)
+                //loop through list and add only those that have max vals more than min
+                foreach (Move item in list)
                 {
-                    result.Add(item);
+                    if (item.GetScore() >= min)
+                    {
+                        result.Add(item);
 
+                    }
                 }
+                return result;
             }
-           // print("-------------------");
-            return result;
         }
 
         // 2) if current max is more than overall max 
-        if (maxCur > max) {
-
-            //if mincur is also more than max
-            if (minCur > max)
+        {
+            if (maxCur > max)
             {
-                abNode.SetOrigin(maxCur, 0);
-                abNode.SetDestination(minCur, 0);
-            }
-            else {
-                abNode.SetOrigin(maxCur, 0);
-                abNode.SetDestination(max, 0);
-            }
 
-            int newMax = abNode.GetOrigin().x;
-            int newMin = abNode.GetDestination().x;
-
-            //print("Both min and max Vals changed");
-            //print("New Depth Max:" + newMax);
-            //print("New Depth min :" + newMin);
-
-            foreach (Move item in list)
-            {
-                if (item.GetScore() >= newMin)
+                //if mincur is also more than max
+                if (minCur > max)
                 {
-                    result.Add(item);
-
-                    //print("Kept :" + item.GetScore());
+                    abNode.SetOrigin(maxCur, 0);
+                    abNode.SetDestination(minCur, 0);
                 }
+                else
+                {
+                    abNode.SetOrigin(maxCur, 0);
+                    abNode.SetDestination(max, 0);
+                }
+
+                int newMax = abNode.GetOrigin().x;
+                int newMin = abNode.GetDestination().x;
+
+                foreach (Move item in list)
+                {
+                    if (item.GetScore() >= newMin)
+                    {
+                        result.Add(item);
+                    }
+                }
+                return result;
             }
-           // print("-------------------");
-            return result;
-
-
         }
 
         // 3) If the max val for current list is less than overall min, discard everything 
         if (maxCur < min) {
-            //print("Current max is less than overall min. Prune Everything.");
             return result;
         }
 
         // 4) if the current min is more than overall min, change the overall min val 
-        if ((minCur > min) && (maxCur<max)) {
-            //print("Current min is more than overall min");
-            //print("Min Val Changed!");
-            //print("New Depth min :" + minCur);
-            //abNode.SetDestination(minCur, 0);
-            //then do the regular processing
-            //loop through list and add only those that have max vals more than min
-            foreach (Move item in list)
+        {
+            if ((minCur > min) && (maxCur < max))
             {
-                if (item.GetScore() >= minCur)
+                //then do the regular processing
+                //loop through list and add only those that have max vals more than min
+                foreach (Move item in list)
                 {
-                    result.Add(item);
+                    if (item.GetScore() >= minCur)
+                    {
+                        result.Add(item);
+                    }
 
-                    //print("Kept :" + item.GetScore());
                 }
-               
+                return result;
             }
-            //print("-------------------");
-            return result;
         }
-
-        //print("None fit. ERROR! Return original list!!!");
         return list; 
     }
+
+
+
+
+
 
 
     //Main recursive function of the bunch
     private void ChildMove(Move move, bool isWhite, int depth)
     {
-       
+       //TODO: Child move runs for a fixed time. Base case should be this time elapsed? 
         //base case. add all the children moves into the global variable and return  
         if (depth == MAXDEPTH)
         {
             finalList.Add(move);
             nodeCount++;
-            //print(move.GetScore());
             return;
         }
-
 
         FPiece[,] board = move.GetBoard();
 
@@ -935,7 +944,7 @@ public class AI_Behavior : CheckersBoard
                     wasForced = true;
                 }
             }
-
+        
             //if the white pieces werent forced at all
             if (!wasForced)
             {
@@ -962,13 +971,9 @@ public class AI_Behavior : CheckersBoard
             {
                 pieces = tempBlacks;
             }
-
         }
 
-
-
         List<Move> newList = new List<Move>(); //create new list to set the children of each of this current move
-
 
         //for each piece of the given color
         foreach (FPiece origin in pieces)
@@ -1010,6 +1015,10 @@ public class AI_Behavior : CheckersBoard
         }
 
     }
+
+
+
+
 
 
 
@@ -1139,7 +1148,6 @@ public class AI_Behavior : CheckersBoard
 
                 Move newMove = new Move(piece, destination, newBoard);
                 Move resultantMove = MakeVirtualMove(piece, destination, newMove);
-                //print(resultantMove.GetScore());
                 moves.Add(resultantMove); //add the virtual move into the board
             }
         }
@@ -1172,7 +1180,7 @@ public class AI_Behavior : CheckersBoard
         result[2] = finalMove.GetDestination().x;
         result[3] = finalMove.GetDestination().y;
 
-        print(nodeCount);
+        print(nodeCount); //Debugging purposes. 
         return result;
     }
 }
