@@ -31,7 +31,7 @@ public class AI_Behavior : CheckersBoard
     //Using score for depth 
     List<Move> abList = new List<Move>(); 
   
-     int MAXDEPTH = 3; 
+     int MAXDEPTH = 0; 
 
    
     //Function that copies the original board and creates a copy in Fpiece
@@ -1023,8 +1023,13 @@ public class AI_Behavior : CheckersBoard
 
 
     //Main function of the algorithm
-    public int[] GetMove(Piece[,] mainBoard)
+    public int[] GetMove(Piece[,] mainBoard, int depth)
     {
+        MAXDEPTH = depth;
+
+        Debug.Log("MAXDEPTH: ");
+        Debug.Log(MAXDEPTH);
+        Debug.Log("end");
 
         int[] result = new int[4];
 

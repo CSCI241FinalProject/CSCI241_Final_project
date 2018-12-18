@@ -33,6 +33,25 @@ public class CheckersBoard : MonoBehaviour
     private Vector3 boardOffset = new Vector3(-4.0f, 0, -4.0f);
     private Vector3 pieceOffset = new Vector3(0.5f, 0, 0.5f);
 
+
+    public static int depth = 1;
+
+
+    public void setEasy()
+    {
+        depth = 2;
+    }
+
+    public void setMed()
+    {
+        depth = 3;
+    }
+    public void setHard()
+    {
+        depth = 4;
+    }
+
+
     private void Start()
     {
         
@@ -57,7 +76,7 @@ public class CheckersBoard : MonoBehaviour
             AI_Behavior AI = new AI_Behavior();
 
 
-            int [] result = AI.GetMove(boardPieces);
+            int [] result = AI.GetMove(boardPieces, depth);
 
            
 
